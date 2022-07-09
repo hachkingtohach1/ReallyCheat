@@ -1,0 +1,41 @@
+{
+   "name": "hachkingtohach1/reallycheat",
+   "description": "A pocketmine-mp plugin to anticheat",
+   "type": "project",
+   "keywords": [
+      "reallycheat",
+      "pocketmine-mp"
+   ],
+   "require": {
+      "php": "^8.0.12",
+      "pocketmine/pocketmine-mp": "4.5.1"
+   },
+    "require-dev": {
+      "phpstan/phpstan": "^1.4"
+   },
+   "scripts": {
+        "analyse-src": "./vendor/bin/phpstan analyse -c phpstan.neon.dist"
+   },
+   "readme": "../README.md",
+   "homepage": "https://github.com/hachkingtohach1",
+   "time": "2022-18-04 07:22",
+   "license": "GPL-3.0-only",
+   "authors": [
+        {
+            "name": "hachkingtohach1",
+            "email": "kobtgihet@gmail.com",
+            "homepage": "https://github.com/hachkingtohach1",
+            "role": "Developer"
+        }
+    ],
+   "support": {
+      "issues": "https://github.com/hachkingtohach1/ReallyCheat-Premium/issues",
+      "wiki": "https://github.com/hachkingtohach1/ReallyCheat-Premium/wiki",
+      "source": "https://github.com/hachkingtohach1/ReallyCheat-Premium"
+   },
+   "autoload": {
+      "psr-4": {
+         "": "../src"
+      }
+   }
+}
