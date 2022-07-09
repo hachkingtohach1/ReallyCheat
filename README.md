@@ -11,7 +11,6 @@
 #
 # Modules can detect
 # 
-# Xray                           - (Obstruction)                100% detect
 # AutoClick                      - (Transfer)                   100% detect
 # RapidHit                       - (Transfer)                   100% detect
 # KillAura                       - (Transfer)                   100% detect
@@ -83,9 +82,6 @@ reallycheat:
         port: 19132
     process: 
         auto: true #Enabling this mode will allow ReallyCheat to automatically handle the behavior and issue penalties to the player.
-    xray:
-        enable: false #To enable your server functionality must be up to < 8gb > or more of ram.
-        distance: 7 #This is the distance that helps ReallyCheat fake the player's block. The more you increase it will make the server load higher.
     alerts: 
         message: "{prefix} §f{player} §7failed §f{module} §7(§c{subtype}§7) §7VL §2{violation}"
         enable: true
