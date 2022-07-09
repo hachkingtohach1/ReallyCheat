@@ -149,7 +149,7 @@ class CommandsListener{
                 $sender->sendMessage(TextFormat::RED."/".$namecmd.TextFormat::RESET." about".TextFormat::GRAY." - Show infomation the plugin.");
                 $sender->sendMessage(TextFormat::RED."/".$namecmd.TextFormat::RESET." notify (toggle/admin)".TextFormat::GRAY." - Use to on/off notify.");
                 $sender->sendMessage(TextFormat::RED."/".$namecmd.TextFormat::RESET." process (auto)".TextFormat::GRAY." - Use to on/off process.");
-                $sender->sendMessage(TextFormat::RED."/".$namecmd.TextFormat::RESET." xray".TextFormat::GRAY." - Use to on/off check xray.");
+                //$sender->sendMessage(TextFormat::RED."/".$namecmd.TextFormat::RESET." xray".TextFormat::GRAY." - Use to on/off check xray.");
                 $sender->sendMessage(TextFormat::RED."/".$namecmd.TextFormat::RESET." banmode (toggle/randomize)".TextFormat::GRAY." - Use to on/off ban mode.");
                 $sender->sendMessage(TextFormat::RED."/".$namecmd.TextFormat::RESET." transfermode (toggle/randomize)".TextFormat::GRAY." - Use to on/off transfer mode.");
                 $sender->sendMessage(TextFormat::RED."/".$namecmd.TextFormat::RESET." captcha (toggle/message/tip/title/randomize)".TextFormat::GRAY." - Use to on/off mode for captcha.");
