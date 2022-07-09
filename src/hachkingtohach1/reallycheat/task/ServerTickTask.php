@@ -29,6 +29,7 @@ class ServerTickTask extends Task{
 
 	private float $tick;
 	private static $instance = null;
+        protected RCAPIProvider $plugin;
 	
 	public function __construct(RCAPIProvider $plugin){
         $this->plugin = $plugin;
