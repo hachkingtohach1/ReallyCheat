@@ -41,7 +41,7 @@ class RCAPIProvider extends PluginBase implements IRCAPI{
 	private static $instance = null;
     private ProxyUDPSocket $proxyUDPSocket;
 
-	public const VERSION_PLUGIN = "PRM-2.1.5";
+	public const VERSION_PLUGIN = "2.1.5";
 
 	public function onLoad() :void{
         self::$instance = $this;
