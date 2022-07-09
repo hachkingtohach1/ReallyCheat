@@ -48,10 +48,6 @@ class ServerTickTask extends Task{
 		return $this->tick;
 	}
 
-	public function getLastTick() :float{
-		return $this->lastTick;
-	}
-
 	public function isLagging(float $l) :bool{
         $lsat = $l - $this->tick;
         return $lsat >= 5;
