@@ -24,7 +24,7 @@ namespace hachkingtohach1\reallycheat\listener;
 
 use hachkingtohach1\reallycheat\components\registry\RCListener;
 use hachkingtohach1\reallycheat\player\RCPlayerAPI;
-use hachkingtohach1\reallycheat\utils\discord\Discord;
+use hachkingtohach1\reallycheat\utils\Discord\Discord;
 use hachkingtohach1\reallycheat\config\ConfigManager;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\event\player\PlayerJoinEvent;
