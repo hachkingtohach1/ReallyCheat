@@ -6,7 +6,7 @@ version: PRM-2.1.5
 permissions:
   reallycheat.command:
     description: "Permission to use the ReallyCheat command."
-    default: true
+    default: false
 commands:
   reallycheat:
     permission: reallycheat.command
