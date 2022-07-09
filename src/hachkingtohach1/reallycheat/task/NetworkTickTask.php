@@ -31,6 +31,7 @@ class NetworkTickTask extends Task{
 
 	private array $network = [];
 	private static $instance = null;
+	protected RCAPIProvider $plugin;
 	
 	public function __construct(RCAPIProvider $plugin){
         $this->plugin = $plugin;
