@@ -20,7 +20,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-namespace hachkingtohach1\reallycheat\utils\discord;
+namespace hachkingtohach1\reallycheat\utils\Discord;
 
 use hachkingtohach1\reallycheat\config\ConfigManager;
 use hachkingtohach1\reallycheat\utils\discord\Webhook;
