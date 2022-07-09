@@ -22,7 +22,7 @@
  * Written by @supercrafter333 <https://CortexPE.xyz>
  * Intended for use on SynicadeNetwork <https://synicade.com>
  */
-namespace hachkingtohach1\reallycheat\utils\discord;
+namespace hachkingtohach1\reallycheat\utils\Discord;
 
 use pocketmine\Server;
 
