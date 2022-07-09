@@ -23,7 +23,7 @@
 namespace hachkingtohach1\reallycheat\events;
 
 use hachkingtohach1\reallycheat\player\RCPlayerAPI;
-use hachkingtohach1\reallycheat\utils\discord\Discord;
+use hachkingtohach1\reallycheat\utils\Discord\Discord;
 
 class BanEvent{
 
