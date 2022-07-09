@@ -5,7 +5,7 @@
 # ReallyCheat ✔
 - This is config example version: 0.0.1
 - Support software: ```PocketMine-PMMP```          (Nukkit is Next)
-- Author: hachkingtohach1(DragoVN)
+- Author: ```hachkingtohach1(DragoVN)```
 ```---
 # -----------------------------------------------------------------------------------------
 #
