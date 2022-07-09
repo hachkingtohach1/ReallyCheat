@@ -30,6 +30,7 @@ use pocketmine\scheduler\Task;
 class CaptchaTask extends Task{
 
 	private static $instance = null;
+	protected RCAPIProvider $plugin;
 	
 	public function __construct(RCAPIProvider $plugin){
         $this->plugin = $plugin;
