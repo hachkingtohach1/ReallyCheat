@@ -5,8 +5,8 @@ branches:
 projects:
   ReallyCheat:
     path: ""
-    libs:
-      - src: utils/Discord
+    utils:
+      - src: Discord
         version: ^1.0.0
         branch: PM4
 ...
