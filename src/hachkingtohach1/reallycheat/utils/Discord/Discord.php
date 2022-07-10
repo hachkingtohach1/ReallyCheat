@@ -33,7 +33,7 @@ class Discord extends ConfigManager{
 	public static function sendMessage(string $text){
 		$discord = new Webhook(self::getData(self::DISCORD_WEBHOOK));
 		$msg = new Message();
-		$msg->setUsername("ReallyCheat [Premium]");
+		$msg->setUsername("ReallyCheat");
 		$msg->setAvatarURL("https://raw.githubusercontent.com/hachkingtohach1/Image/main/icon.png");
 		$msg->setContent($text); 
 		$discord->send($msg);
