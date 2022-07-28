@@ -76,7 +76,6 @@ class SpamC extends Check{
                             $player->sendMessage(self::getData(self::CHAT_COMMAND_SPAM_TEXT));
                             $event->setCommand("");
                             $event->cancel();
-                            ///var_dump("Hú");
                         }                  
                     }else{
                         $player->unsetExternalData("lastTickSC"); 
