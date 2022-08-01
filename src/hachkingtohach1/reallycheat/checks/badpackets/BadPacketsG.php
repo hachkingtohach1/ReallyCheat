@@ -62,33 +62,33 @@ class BadPacketsG extends Check{
         return 25;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
-        $ticks = $player->getExternalData("ticksClick");
-        $avgSpeed = $player->getExternalData("avgSpeed");
-        $avgDeviation = $player->getExternalData("avgDeviation");
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
+        $ticks = $playerAPI->getExternalData("ticksClick");
+        $avgSpeed = $playerAPI->getExternalData("avgSpeed");
+        $avgDeviation = $playerAPI->getExternalData("avgDeviation");
         if($packet instanceof LevelSoundEventPacket){
             if($packet->sound === LevelSoundEvent::ATTACK_NODAMAGE){
                 if($ticks !== null && $avgSpeed !== null && $avgDeviation !== null){
-                    $player->setExternalData("ticksClick", 0);
-                    if($player->isDigging() || $ticks > 5){
-                        $player->unsetExternalData("ticksClick");
-                        $player->unsetExternalData("avgSpeed");
-                        $player->unsetExternalData("avgDeviation"); 
+                    $playerAPI->setExternalData("ticksClick", 0);
+                    if($playerAPI->isDigging() || $ticks > 5){
+                        $playerAPI->unsetExternalData("ticksClick");
+                        $playerAPI->unsetExternalData("avgSpeed");
+                        $playerAPI->unsetExternalData("avgDeviation");
                         return;
                     }else{
-                        $player->getExternalData("ticksClick", $ticks + 1);
+                        $playerAPI->getExternalData("ticksClick", $ticks + 1);
                     }
                     $speed = $ticks * 50;
-                    $player->setExternalData("avgSpeed", (($avgSpeed * 14) + $speed) / 15);
-                    $deviation = abs($speed - $player->getExternalData("avgSpeed"));
-                    $player->setExternalData("avgDeviation", (($avgDeviation * 9) + $deviation) / 10);
-                    if($player->getExternalData("avgDeviation") < 5){
-                        $this->failed($player);
+                    $playerAPI->setExternalData("avgSpeed", (($avgSpeed * 14) + $speed) / 15);
+                    $deviation = abs($speed - $playerAPI->getExternalData("avgSpeed"));
+                    $playerAPI->setExternalData("avgDeviation", (($avgDeviation * 9) + $deviation) / 10);
+                    if($playerAPI->getExternalData("avgDeviation") < 5){
+                        $this->failed($playerAPI);
                     }
                 }else{
-                    $player->setExternalData("ticksClick", 0);
-                    $player->setExternalData("avgSpeed", 0);
-                    $player->setExternalData("avgDeviation", 0);   
+                    $playerAPI->setExternalData("ticksClick", 0);
+                    $playerAPI->setExternalData("avgSpeed", 0);
+                    $playerAPI->setExternalData("avgDeviation", 0);
                 }
             }
         }

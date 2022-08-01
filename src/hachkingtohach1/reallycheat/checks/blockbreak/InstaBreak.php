@@ -63,11 +63,11 @@ class InstaBreak extends Check{
         return 1;
     }
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{
-        $breakTimes = $player->getExternalData("breakTimes");
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
+        $breakTimes = $playerAPI->getExternalData("breakTimes");
         if($event instanceof PlayerInteractEvent){
             if($event->getAction() === PlayerInteractEvent::LEFT_CLICK_BLOCK){
-                $player->setExternalData("breakTimes", floor(microtime(true) * 20));
+                $playerAPI->setExternalData("breakTimes", floor(microtime(true) * 20));
             }
         }
         if($event instanceof BlockBreakEvent){
@@ -79,10 +79,10 @@ class InstaBreak extends Check{
                 $target = $event->getBlock();
                 $item = $event->getItem();
                 $expectedTime = ceil($target->getBreakInfo()->getBreakTime($item) * 20);
-                if(($haste = $player->getEffects()->get(VanillaEffects::HASTE())) !== null){
+                if(($haste = $playerAPI->getPlayer()->getEffects()->get(VanillaEffects::HASTE())) !== null){
                     $expectedTime *= 1 - (0.2 * $haste->getEffectLevel());
                 }
-                if(($miningFatigue = $player->getEffects()->get(VanillaEffects::MINING_FATIGUE())) !== null){
+                if(($miningFatigue = $playerAPI->getPlayer()->getEffects()->get(VanillaEffects::MINING_FATIGUE())) !== null){
                     $expectedTime *= 1 + (0.3 * $miningFatigue->getEffectLevel());
                 }
                 $expectedTime -= 1; 
@@ -91,7 +91,7 @@ class InstaBreak extends Check{
                     $event->cancel();
                     return;
                 }
-                $player->unsetExternalData("breakTimes");
+                $playerAPI->unsetExternalData("breakTimes");
             }
         }
     }

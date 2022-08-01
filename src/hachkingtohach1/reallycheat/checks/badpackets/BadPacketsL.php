@@ -64,15 +64,16 @@ class BadPacketsL extends Check{
         return 8;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{       
-        $nLocation = $player->getNLocation();
-        if($player->getOnlineTime() > 10 && !empty($nLocation) && $player->isSurvival()){  
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
+        $nLocation = $playerAPI->getNLocation();
+        $player = $playerAPI->getPlayer();
+        if($playerAPI->getOnlineTime() > 10 && !empty($nLocation) && $player->isSurvival()){
             $recived = false;
             if($packet instanceof MovePlayerPacket){
                 $recived = true;
             }
             if($packet instanceof PlayerAuthInputPacket){ 
-                $limit = $player->getMovementSpeed() * 35; 
+                $limit = $player->getMovementSpeed() * 35;
                 $distX = $nLocation["to"]->getX() - $nLocation["from"]->getX();
                 $distZ = $nLocation["to"]->getZ() - $nLocation["from"]->getZ(); 
                 $dist = ($distX * $distX) + ($distZ * $distZ);
@@ -80,9 +81,9 @@ class BadPacketsL extends Check{
                 $shiftedLastDist = $lastDist * 0.91;
                 $equalness = $dist - $shiftedLastDist;
                 $scaledEqualness = $equalness * 138;  
-                $idBlockDown = $player->getWorld()->getBlockAt((int)$player->getLocation()->getX(), (int)$player->getLocation()->getY() - 0.01, (int)$player->getLocation()->getZ())->getId();            
-                $isFalling = $player->getLastGroundY() > $player->getlocation()->getY() ? true : false;               
-                $limit += $player->getJumpTicks() < 40 ? ($limit / 3) : 0;
+                $idBlockDown = $player->getWorld()->getBlockAt((int)$player->getLocation()->getX(), (int)$player->getLocation()->getY() - 0.01, (int)$player->getLocation()->getZ())->getId();
+                $isFalling = $playerAPI->getLastGroundY() > $player->getLocation()->getY();
+                $limit += $playerAPI->getJumpTicks() < 40 ? ($limit / 3) : 0;
                 $limit += $player->isSprinting() ? ($limit / 33) : 0;
                 $effects = [];
                 foreach($player->getEffects()->all() as $index => $effect){
@@ -90,12 +91,12 @@ class BadPacketsL extends Check{
                     $effects[$transtable] = $effect->getEffectLevel() + 1;
                 }
                 $limit += isset($effects["potion.moveSpeed"]) ? (pow($effects["potion.moveSpeed"] * 2, 2) / 16) : 0;
-                $limit -= $player->isInLiquid() ? ($limit / 2.6) : 0;
-                $limit -= $player->isInWeb() ? ($limit / 1.1) : 0;
+                $limit -= $playerAPI->isInLiquid() ? ($limit / 2.6) : 0;
+                $limit -= $playerAPI->isInWeb() ? ($limit / 1.1) : 0;
                 $limit -= BlockUtil::isUnderBlock($nLocation["to"], [BlockLegacyIds::SOUL_SAND], 1) ? ($limit / 1.3) : 0;
-                if($player->isOnGround() && !$player->isOnAdhesion() && !$player->isOnIce() && $player->getAttackTicks() > 100 && $player->isSurvival() && !$recived && !$isFalling && $idBlockDown !== 0){    
-                    if($scaledEqualness > $limit and $player->getPing() < self::getData(self::PING_LAGGING)){
-                        $this->failed($player);
+                if($playerAPI->isOnGround() && !$playerAPI->isOnAdhesion() && !$playerAPI->isOnIce() && $playerAPI->getAttackTicks() > 100 && $player->isSurvival() && !$recived && !$isFalling && $idBlockDown !== 0){
+                    if($scaledEqualness > $limit and $playerAPI->getPing() < self::getData(self::PING_LAGGING)){
+                        $this->failed($playerAPI);
                     }
                 }
             }

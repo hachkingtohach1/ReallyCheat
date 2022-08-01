@@ -61,22 +61,23 @@ class AimAssistA extends Check{
         return 10;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
-        if($packet instanceof PlayerAuthInputPacket){    
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
+        if($packet instanceof PlayerAuthInputPacket){
+            $player = $playerAPI->getPlayer();
             if(                        
                 !$player->isSurvival() ||
-                $player->getAttackTicks() > 20 ||
-                $player->getTeleportTicks() < 100 ||
+                $playerAPI->getAttackTicks() > 20 ||
+                $playerAPI->getTeleportTicks() < 100 ||
                 $player->isFlying() ||
-                $player->getAllowFlight()          
+                $player->getAllowFlight()
             ){
                 return;
             }   
-            $nLocation = $player->getNLocation();
+            $nLocation = $playerAPI->getNLocation();
             if(!empty($nLocation)){
                 $abs = abs($nLocation["to"]->getYaw() - $nLocation["from"]->getYaw());
                 if($nLocation["from"]->getPitch() == $nLocation["to"]->getPitch() && $abs >= 3 && $nLocation["from"]->getPitch() != 90 && $nLocation["to"]->getPitch() != 90){                  
-                    $this->failed($player);
+                    $this->failed($playerAPI);
                 }
             }
         }

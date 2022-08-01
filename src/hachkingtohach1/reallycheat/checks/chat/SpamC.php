@@ -62,26 +62,26 @@ class SpamC extends Check{
         return 3;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{}
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{}
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{     
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof CommandEvent){
             if(!$event->isCancelled()){
                 $command = $event->getCommand();
-                $lastTicks = $player->getExternalData("lastTickSC");
+                $lastTicks = $playerAPI->getExternalData("lastTickSC");
                 if($lastTicks !== null){
                     $diff = microtime(true) - $lastTicks;
                     if($diff < self::getData(self::CHAT_COMMAND_SPAM_DELAY)){
                         if(in_array($command, self::getData(self::CHAT_COMMAND_SPAM_COMMANDS))){
-                            $player->sendMessage(self::getData(self::CHAT_COMMAND_SPAM_TEXT));
+                            $playerAPI->getPlayer()->sendMessage(self::getData(self::CHAT_COMMAND_SPAM_TEXT));
                             $event->setCommand("");
                             $event->cancel();
                         }                  
                     }else{
-                        $player->unsetExternalData("lastTickSC"); 
+                        $playerAPI->unsetExternalData("lastTickSC");
                     }
                 }else{
-                    $player->setExternalData("lastTickSC", microtime(true));
+                    $playerAPI->setExternalData("lastTickSC", microtime(true));
                 }
             }             
         }

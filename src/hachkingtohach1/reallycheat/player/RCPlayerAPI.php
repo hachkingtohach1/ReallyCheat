@@ -2,14 +2,26 @@
 
 namespace hachkingtohach1\reallycheat\player;
 
-use hachkingtohach1\reallycheat\components\player\RCPlayer;
 use hachkingtohach1\reallycheat\components\player\IPlayerAPI;
 use hachkingtohach1\reallycheat\components\block\BlockLegacyIds;
 use pocketmine\entity\Location;
 use pocketmine\math\Facing;
+use pocketmine\player\Player;
+use pocketmine\player\SurvivalBlockBreakHandler;
 
-class RCPlayerAPI extends RCPlayer implements IPlayerAPI{
+class RCPlayerAPI implements IPlayerAPI{
+    
+    /** @var RCPlayerAPI[] */
+    public static array $rcPlayers = [];
 
+    public static function getRCPlayer(Player $player) :RCPlayerAPI{
+        return self::$rcPlayers[$player->getName()] ??= new RCPlayerAPI($player);
+    }
+    
+    public static function removeRCPlayer(Player $player) :void{
+        unset(self::$rcPlayers[$player->getName()]);
+    }
+    
     private bool $isCaptcha = false; 
     private bool $flagged = false;
     private bool $actionBreakingSpecial = false;
@@ -47,6 +59,12 @@ class RCPlayerAPI extends RCPlayer implements IPlayerAPI{
     private array $nLocation = [];
     private array $externalData = [];
     private string $captchaCode = "nocode";
+
+    public function __construct(private Player $player){}
+
+    public function getPlayer() :Player{
+        return $this->player;
+    }
 
     //Captcha
     public function isCaptcha() :bool{
@@ -167,20 +185,20 @@ class RCPlayerAPI extends RCPlayer implements IPlayerAPI{
 
     //Sprinting
     public function isRCSprinting() :bool{
-        return $this->isSprinting();
+        return $this->player->isSprinting();
     }
 
     public function setRCSprinting(bool $data) :void{
-        $this->setSprinting($data);
+        $this->player->setSprinting($data);
     }
 
     //On ground
     public function isOnGround() :bool{
-        return $this->onGround;
+        return $this->player->onGround;
     }
 
     public function setOnGround(bool $data) :void{
-        $this->onGround = $data;
+        $this->player->onGround = $data;
     }
 
     //Sniffing
@@ -221,45 +239,54 @@ class RCPlayerAPI extends RCPlayer implements IPlayerAPI{
 
     //Digging
     public function isDigging() :bool{
-        if($this->blockBreakHandler !== null){
+        if($this->getBlockBreakHandler() !== null){
             return true;
         }
         return false;
     }
+    
+    private function getBlockBreakHandler() :?SurvivalBlockBreakHandler{
+        static $ref = null;
+        if($ref === null){
+            $ref = new \ReflectionProperty(Player::class, "blockBreakHandler");
+            $ref->setAccessible(true);
+        }
+        return $ref->getValue($this->player);
+    }
 
     //In Web
     public function isInWeb() :bool{
-        $world = $this->getWorld();
-        $location = $this->getLocation();	
-		$blocksAround = [
+        $world = $this->player->getWorld();
+        $location = $this->player->getLocation();    
+        $blocksAround = [
             $world->getBlock($location),
             $world->getBlock($location->add(0, 1, 0)),
-			$world->getBlock($location->add(0, 2, 0)),
+            $world->getBlock($location->add(0, 2, 0)),
             $world->getBlock($location->subtract(0, 1, 0)),
-			$world->getBlock($location->subtract(0, 2, 0))
+            $world->getBlock($location->subtract(0, 2, 0))
         ];
         foreach($blocksAround as $block){
-			if($block->getId() === BlockLegacyIds::COBWEB){
-				return true;
-			}
-		}
+            if($block->getId() === BlockLegacyIds::COBWEB){
+                return true;
+            }
+        }
         return false;
     }
 
     //In Box Block
     public function isInBoxBlock() :bool{
-        $world = $this->getWorld();
-        $location = $this->getLocation();	
-		$blocksAround = [
+        $world = $this->player->getWorld();
+        $location = $this->player->getLocation();    
+        $blocksAround = [
             $world->getBlock($location->getSide(Facing::NORTH)->add(0, 1, 0)),
             $world->getBlock($location->getSide(Facing::WEST)->add(0, 1, 0)),
-			$world->getBlock($location->getSide(Facing::EAST)->add(0, 1, 0))
+            $world->getBlock($location->getSide(Facing::EAST)->add(0, 1, 0))
         ];
         foreach($blocksAround as $block){
-			if($block->getId() !== BlockLegacyIds::AIR){
-				return true;
-			}
-		}
+            if($block->getId() !== BlockLegacyIds::AIR){
+                return true;
+            }
+        }
         return false;
     }
 
@@ -292,8 +319,7 @@ class RCPlayerAPI extends RCPlayer implements IPlayerAPI{
 
     //Ping
     public function getPing() :float{
-		$ping = $this->getNetworkSession()->getPing() === null ? 0.0 : $this->getNetworkSession()->getPing();
-        return $ping;
+        return $this->player->getNetworkSession()->getPing() === null ? 0.0 : $this->player->getNetworkSession()->getPing();
     }
 
     //CPS
@@ -413,51 +439,51 @@ class RCPlayerAPI extends RCPlayer implements IPlayerAPI{
 
     //Violation
     public function getViolation(string $supplier) :int{
-        if(isset($this->violations[$this->getName()][$supplier])){
-            return $this->violations[$this->getName()][$supplier]["vl"];
+        if(isset($this->violations[$name = $this->player->getName()][$supplier])){
+            return $this->violations[$name][$supplier]["vl"];
         }
         return 1;
     }
 
     public function setViolation(string $supplier, int $amount) :void{
-        $this->violations[$this->getName()][$supplier]["vl"] = $amount;
+        $this->violations[$this->player->getName()][$supplier]["vl"] = $amount;
     }
 
     public function addViolation(string $supplier) :void{
-        if(isset($this->violations[$this->getName()][$supplier])){
-            $delayTime = microtime(true) - $this->violations[$this->getName()][$supplier]["time"];
+        if(isset($this->violations[$name = $this->player->getName()][$supplier])){
+            $delayTime = microtime(true) - $this->violations[$name][$supplier]["time"];
             if($delayTime < 2){
-                $this->violations[$this->getName()][$supplier]["vl"] += 1;
+                $this->violations[$name][$supplier]["vl"] += 1;
             }else{
-                unset($this->violations[$this->getName()][$supplier]);
+                unset($this->violations[$name][$supplier]);
             }
         }else{
-            $this->violations[$this->getName()][$supplier] = ["vl" => 1, "time" => microtime(true)];
+            $this->violations[$name][$supplier] = ["vl" => 1, "time" => microtime(true)];
         }
     }
 
     //Real violation
     public function getRealViolation(string $supplier) :int{
-        if(isset($this->realViolations[$this->getName()][$supplier])){
-            return $this->realViolations[$this->getName()][$supplier]["vl"];
+        if(isset($this->realViolations[$name = $this->player->getName()][$supplier])){
+            return $this->realViolations[$name][$supplier]["vl"];
         }
         return 0;
     }
 
     public function setRealViolation(string $supplier, int $amount) :void{
-        $this->realViolations[$this->getName()][$supplier]["vl"] = $amount;
+        $this->realViolations[$this->player->getName()][$supplier]["vl"] = $amount;
     }
 
     public function addRealViolation(string $supplier) :void{
-        if(isset($this->realViolations[$this->getName()][$supplier])){
-            $delayTime = microtime(true) - $this->realViolations[$this->getName()][$supplier]["time"];
+        if(isset($this->realViolations[$name = $this->player->getName()][$supplier])){
+            $delayTime = microtime(true) - $this->realViolations[$name][$supplier]["time"];
             if($delayTime < 600){
-                $this->realViolations[$this->getName()][$supplier]["vl"] += 1;
+                $this->realViolations[$name][$supplier]["vl"] += 1;
             }else{
-                unset($this->realViolations[$this->getName()][$supplier]);
+                unset($this->realViolations[$name][$supplier]);
             }
         }else{
-            $this->realViolations[$this->getName()][$supplier] = ["vl" => 1, "time" => microtime(true)];
+            $this->realViolations[$name][$supplier] = ["vl" => 1, "time" => microtime(true)];
         }
     }
 
@@ -472,19 +498,19 @@ class RCPlayerAPI extends RCPlayer implements IPlayerAPI{
 
     //External Data
     public function getExternalData(string $dataName){
-        if(isset($this->externalData[$this->getName()][$dataName])){
-            return $this->externalData[$this->getName()][$dataName];
+        if(isset($this->externalData[$name = $this->player->getName()][$dataName])){
+            return $this->externalData[$name][$dataName];
         }
         return null;
     }
 
     public function setExternalData(string $dataName, mixed $amount) :void{
-        $this->externalData[$this->getName()][$dataName] = $amount;
+        $this->externalData[$this->player->getName()][$dataName] = $amount;
     }
 
     public function unsetExternalData(string $dataName) :void{
-        if(isset($this->externalData[$this->getName()][$dataName])){
-            unset($this->externalData[$this->getName()][$dataName]);
+        if(isset($this->externalData[$name = $this->player->getName()][$dataName])){
+            unset($this->externalData[$name][$dataName]);
         }
     }
 
@@ -496,5 +522,4 @@ class RCPlayerAPI extends RCPlayer implements IPlayerAPI{
     public function setCaptchaCode(string $data) :void{
         $this->captchaCode = $data;
     }
-
 }

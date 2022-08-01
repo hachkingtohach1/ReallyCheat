@@ -29,32 +29,32 @@ use hachkingtohach1\reallycheat\utils\ReplaceText;
 
 class CaptchaEvent extends ConfigManager{
 
-    private RCPlayerAPI $player;
+    private RCPlayerAPI $playerAPI;
 
-    public function __construct(RCPlayerAPI $player){
-        $this->player = $player;
+    public function __construct(RCPlayerAPI $playerAPI){
+        $this->playerAPI = $playerAPI;
 	}
 
-    public function getPlayer() :RCPlayerAPI{
-        return $this->player;
+    public function getPlayerAPI() :RCPlayerAPI{
+        return $this->playerAPI;
     }
 
     public function sendMessage(){
-        $this->player->sendMessage(ReplaceText::replace($this->player, self::getData(self::CAPTCHA_TEXT)));
+        $this->playerAPI->getPlayer()->sendMessage(ReplaceText::replace($this->playerAPI, self::getData(self::CAPTCHA_TEXT)));
     }
 
     public function sendTip(){
-        $this->player->sendTip(ReplaceText::replace($this->player, self::getData(self::CAPTCHA_TEXT)));
+        $this->playerAPI->getPlayer()->sendTip(ReplaceText::replace($this->playerAPI, self::getData(self::CAPTCHA_TEXT)));
     }
 
     public function sendTitle(){
-        $this->player->sendSubTitle(ReplaceText::replace($this->player, self::getData(self::CAPTCHA_TEXT)));
+        $this->playerAPI->getPlayer()->sendSubTitle(ReplaceText::replace($this->playerAPI, self::getData(self::CAPTCHA_TEXT)));
     }
 
     public function sendCaptcha(){
-        if($this->player->isCaptcha()){
-            if($this->player->getCaptchaCode() === "nocode"){
-                $this->player->setCaptchaCode(CharUtil::generatorCode(self::getData(self::CAPTCHA_CODE_LENGTH)));
+        if($this->playerAPI->isCaptcha()){
+            if($this->playerAPI->getCaptchaCode() === "nocode"){
+                $this->playerAPI->setCaptchaCode(CharUtil::generatorCode(self::getData(self::CAPTCHA_CODE_LENGTH)));
             }
             if(self::getData(self::CAPTCHA_RANDOMIZE) === true){               
                 switch(rand(1, 3)){

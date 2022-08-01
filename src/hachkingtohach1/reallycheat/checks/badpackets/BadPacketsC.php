@@ -63,7 +63,7 @@ class BadPacketsC extends Check{
         return 5;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
         if($packet instanceof PlayerActionPacket){
             if(in_array($packet->action, [PlayerAction::START_BREAK, PlayerAction::ABORT_BREAK, PlayerAction::CONTINUE_DESTROY_BLOCK, PlayerAction::INTERACT_BLOCK])){
                 switch($packet->face){
@@ -71,7 +71,7 @@ class BadPacketsC extends Check{
                     case Facing::DOWN:
                     case Facing::EAST:
                     case Facing::NORTH:
-                        $this->failed($player);
+                        $this->failed($playerAPI);
                         break;
                 }         
             }

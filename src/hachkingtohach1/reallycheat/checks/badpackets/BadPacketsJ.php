@@ -60,25 +60,25 @@ class BadPacketsJ extends Check{
         return 3;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
         if(
-            $player->isOnAdhesion() || 
-            $player->isInLiquid() || 
-            $player->isInWeb() || 
-            $player->getDeathTicks() < 100 || 
-            $player->getJumpTicks() < 60 || 
-            $player->getTeleportTicks() < 100 || 
-            $player->isOnGround()
+            $playerAPI->isOnAdhesion() ||
+            $playerAPI->isInLiquid() ||
+            $playerAPI->isInWeb() ||
+            $playerAPI->getDeathTicks() < 100 ||
+            $playerAPI->getJumpTicks() < 60 ||
+            $playerAPI->getTeleportTicks() < 100 ||
+            $playerAPI->isOnGround()
         ){ 
             return;
         }
-        $lastY = $player->getExternalData("lastYB");           
-        $player->setExternalData("lastYB", $player->getLocation()->getY());
-        if($lastY !== null && $player->isOnGround()){
-            if($lastY < $player->getLocation()->getY()){
-                $this->failed($player);
+        $lastY = $playerAPI->getExternalData("lastYB");
+        $playerAPI->setExternalData("lastYB", $playerAPI->getPlayer()->getLocation()->getY());
+        if($lastY !== null && $playerAPI->isOnGround()){
+            if($lastY < $playerAPI->getPlayer()->getLocation()->getY()){
+                $this->failed($playerAPI);
             }
-            $player->unsetExternalData("lastYB");
+            $playerAPI->unsetExternalData("lastYB");
         }
     }
 

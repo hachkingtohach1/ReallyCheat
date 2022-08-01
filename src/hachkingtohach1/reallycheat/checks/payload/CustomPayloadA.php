@@ -76,6 +76,6 @@ class CustomPayloadA extends Check{
         }
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{}
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{}
 
 }

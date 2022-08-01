@@ -63,14 +63,13 @@ class ScaffoldD extends Check{
         return 1;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{}
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{}
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{     
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof BlockPlaceEvent){
-            if($player->getInventory()->getItemInHand() === BlockLegacyIds::AIR){
-                $this->failed($player);
+            if($playerAPI->getPlayer()->getInventory()->getItemInHand()->isNull()){
+                $this->failed($playerAPI);
             }
         }
     }
-
 }

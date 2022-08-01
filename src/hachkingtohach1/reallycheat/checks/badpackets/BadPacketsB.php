@@ -61,10 +61,10 @@ class BadPacketsB extends Check{
         return 5;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
         if($packet instanceof PlayerAuthInputPacket){
             if(abs($packet->getPosition()->getY()) > 500){
-                $this->failed($player);
+                $this->failed($playerAPI);
             }
         }
     }

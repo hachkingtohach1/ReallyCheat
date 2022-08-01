@@ -62,13 +62,13 @@ class SpamB extends Check{
         return 3;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{}
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{}
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{     
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof PlayerChatEvent){
             if(!$event->isCancelled()){
                 $message = $event->getMessage();
-                $lastMessage = $player->getExternalData("lastMessage");
+                $lastMessage = $playerAPI->getExternalData("lastMessage");
                 if($lastMessage !== null){
                     $violation = false;
                     $explode = explode(" ", $message);
@@ -102,12 +102,12 @@ class SpamB extends Check{
                         $violation = true;
                     }
                     if($violation === true){
-                        $player->sendMessage($this->replaceText($player, self::getData(self::CHAT_REPEAT_TEXT), $this->getName(), $this->getSubType()));
+                        $playerAPI->getPlayer()->sendMessage($this->replaceText($playerAPI, self::getData(self::CHAT_REPEAT_TEXT), $this->getName(), $this->getSubType()));
                         $event->cancel();
                     }
-                    $player->setExternalData("lastMessage", $message);
+                    $playerAPI->setExternalData("lastMessage", $message);
                 }else{
-                    $player->setExternalData("lastMessage", $message);
+                    $playerAPI->setExternalData("lastMessage", $message);
                 }
             }             
         }

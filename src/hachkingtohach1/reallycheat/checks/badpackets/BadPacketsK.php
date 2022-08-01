@@ -71,34 +71,34 @@ class BadPacketsK extends Check{
         }
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
         if(
-            $player->isDigging() || 
-            $player->getPlacingTicks() < 100 || 
-            $player->getAttackTicks() < 40 ||
-            !$player->isSurvival() ||
+            $playerAPI->isDigging() ||
+            $playerAPI->getPlacingTicks() < 100 ||
+            $playerAPI->getAttackTicks() < 40 ||
+            !$playerAPI->getPlayer()->isSurvival() ||
             !$this->canDamagable
         ){
             return;
         }
-        $ticks = $player->getExternalData("clicksTicks3");
-        $lastClick = $player->getExternalData("lastClick3");
+        $ticks = $playerAPI->getExternalData("clicksTicks3");
+        $lastClick = $playerAPI->getExternalData("lastClick3");
         if($packet instanceof AnimatePacket){
             if($packet->action === AnimatePacket::ACTION_SWING_ARM){
                 if($ticks !== null && $lastClick !== null){
                     $diff = microtime(true) - $lastClick;
                     if($diff > 2){
                         if($ticks > 15){
-                            $this->failed($player);
+                            $this->failed($playerAPI);
                         }
-                        $player->unsetExternalData("clicksTicks3");
-                        $player->unsetExternalData("lastClick3");
+                        $playerAPI->unsetExternalData("clicksTicks3");
+                        $playerAPI->unsetExternalData("lastClick3");
                     }else{
-                        $player->setExternalData("clicksTicks3", $ticks + 1);
+                        $playerAPI->setExternalData("clicksTicks3", $ticks + 1);
                     }
                 }else{
-                    $player->setExternalData("clicksTicks3", 0);
-                    $player->setExternalData("lastClick3", microtime(true));
+                    $playerAPI->setExternalData("clicksTicks3", 0);
+                    $playerAPI->setExternalData("lastClick3", microtime(true));
                 }
             }
         }

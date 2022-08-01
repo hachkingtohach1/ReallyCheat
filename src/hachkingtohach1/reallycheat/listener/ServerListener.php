@@ -34,6 +34,7 @@ use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\player\Player;
 
 class ServerListener extends RCListener{
 
@@ -57,16 +58,14 @@ class ServerListener extends RCListener{
 
     public function onPlayerJoin(PlayerJoinEvent $event){
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){
-            Discord::onJoin($player);
-        }
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+        Discord::onJoin($playerAPI);
     }
 
     public function onPlayerQuit(PlayerQuitEvent $event){
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){
-            Discord::onLeft($player);
-        }
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+        Discord::onLeft($playerAPI);
         $ip = $player->getNetworkSession()->getIp();
         if(isset($this->ip[$ip])){
             $this->ip[$ip] -= 1;
@@ -76,52 +75,49 @@ class ServerListener extends RCListener{
     public function onPlayerChat(PlayerChatEvent $event){
         $player = $event->getPlayer();
         $message = $event->getMessage();
-        if($player instanceof RCPlayerAPI){
-            if($player->isCaptcha()){
-                if($message === $player->getCaptchaCode()){
-                    $player->setCaptcha(false);
-                    $player->setCaptchaCode("nocode");
-                }
-                $event->cancel();
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+      
+        if($playerAPI->isCaptcha()){
+            if($message === $playerAPI->getCaptchaCode()){
+                $playerAPI->setCaptcha(false);
+                $playerAPI->setCaptchaCode("nocode");
             }
+            $event->cancel();
         }
     }
 
     public function onEntityDamageByEntity(EntityDamageByEntityEvent $event){
         $damager = $event->getDamager();
-        if($damager instanceof RCPlayerAPI){
-            if($damager->isCaptcha()){
-                $event->cancel();
-            }
+        if(!$damager instanceof Player){
+            return;
+        }
+        $playerAPI = RCPlayerAPI::getRCPlayer($damager);
+        if($playerAPI->isCaptcha()){
+            $event->cancel();
         }
     }
 
     public function onPlayerInteract(PlayerInteractEvent $event){
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){
-            if($player->isCaptcha()){
-                $event->cancel();
-            }
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+        if($playerAPI->isCaptcha()){
+            $event->cancel();
         }
     }
 
     public function onPlayerMove(PlayerMoveEvent $event){
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){
-            if($player->isCaptcha()){
-                $event->cancel();
-            }
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+        if($playerAPI->isCaptcha()){
+            $event->cancel();
         }
     }
 
     public function onBlockBreak(BlockBreakEvent $event){
         $player = $event->getPlayer();
-        $block = $event->getBlock();
-        if($player instanceof RCPlayerAPI){
-            if($player->isCaptcha()){
-                $event->cancel();
-            }
-        }        
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+        if($playerAPI->isCaptcha()){
+            $event->cancel();
+        }
     }
-    
 }

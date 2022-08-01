@@ -60,35 +60,36 @@ class FlyA extends Check{
         return 1;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
+        $player = $playerAPI->getPlayer();
         if(
-            $player->getAttackTicks() < 40 || 
-            $player->getOnlineTime() <= 30 || 
-            $player->getJumpTicks() < 40 || 
-            $player->isInWeb() || 
-            $player->isOnGround() || 
-            $player->isOnAdhesion() || 
+            $playerAPI->getAttackTicks() < 40 ||
+            $playerAPI->getOnlineTime() <= 30 ||
+            $playerAPI->getJumpTicks() < 40 ||
+            $playerAPI->isInWeb() ||
+            $playerAPI->isOnGround() ||
+            $playerAPI->isOnAdhesion() ||
             $player->getAllowFlight() ||
             !$player->isSurvival()
         ){
-            $player->unsetExternalData("lastYNoGroundF");
-            $player->unsetExternalData("lastTimeF");
+            $playerAPI->unsetExternalData("lastYNoGroundF");
+            $playerAPI->unsetExternalData("lastTimeF");
             return;
         }
-        $lastYNoGround = $player->getExternalData("lastYNoGroundF");
-        $lastTime = $player->getExternalData("lastTimeF");
+        $lastYNoGround = $playerAPI->getExternalData("lastYNoGroundF");
+        $lastTime = $playerAPI->getExternalData("lastTimeF");
         if($lastYNoGround !== null && $lastTime !== null){
             $diff = microtime(true) - $lastTime;
             if($diff > 1){
                 if((int)$player->getLocation()->getY() == $lastYNoGround){
-                    $this->failed($player);
+                    $this->failed($playerAPI);
                 }
-                $player->unsetExternalData("lastYNoGroundF");
-                $player->unsetExternalData("lastTimeF");
+                $playerAPI->unsetExternalData("lastYNoGroundF");
+                $playerAPI->unsetExternalData("lastTimeF");
             }           
         }else{
-            $player->setExternalData("lastYNoGroundF", (int)$player->getLocation()->getY());
-            $player->setExternalData("lastTimeF", microtime(true));
+            $playerAPI->setExternalData("lastYNoGroundF", (int)$player->getLocation()->getY());
+            $playerAPI->setExternalData("lastTimeF", microtime(true));
         }
     }
 

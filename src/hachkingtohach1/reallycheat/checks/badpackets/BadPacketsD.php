@@ -61,13 +61,14 @@ class BadPacketsD extends Check{
         return 5;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
         if($packet instanceof PlayerAuthInputPacket){
+            $player = $playerAPI->getPlayer();
             if(
                 !$player->isFlying() ||
                 !$player->getAllowFlight() ||
-                $player->getAttackTicks() < 100 ||
-                $player->getTeleportTicks() < 100 ||
+                $playerAPI->getAttackTicks() < 100 ||
+                $playerAPI->getTeleportTicks() < 100 ||
                 $player->isSurvival()
             ){
                 return;
@@ -75,7 +76,7 @@ class BadPacketsD extends Check{
             $deltaPitch = cos($packet->getPitch());
             $deltaYaw = cos($packet->getYaw());
             if($deltaPitch === 0 and $deltaYaw === 0){
-                $this->failed($player);
+                $this->failed($playerAPI);
             }
         }
     }

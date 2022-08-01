@@ -27,6 +27,7 @@ use hachkingtohach1\reallycheat\player\RCPlayerAPI;
 use hachkingtohach1\reallycheat\utils\MathUtil;
 use pocketmine\event\Event;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\player\Player;
 
 class Velocity extends Check{
 
@@ -65,19 +66,20 @@ class Velocity extends Check{
     public function checkJustEvent(Event $event) :void{
         if($event instanceof EntityDamageByEntityEvent){
             $entity = $event->getEntity();
-            if($entity instanceof RCPlayerAPI){
+            if($entity instanceof Player){
+                $playerAPI = RCPlayerAPI::getRCPlayer($entity);
                 $location = $entity->getLocation();
-                $lastLocation = $entity->getExternalData("lastLocationV");
+                $lastLocation = $playerAPI->getExternalData("lastLocationV");
                 if($lastLocation !== null){
-                    if(!$event->isCancelled() && $entity->isOnGround() && !$entity->isInWeb() && !$entity->isUnderBlock() && !$entity->isInBoxBlock()){
+                    if(!$event->isCancelled() && $entity->isOnGround() && !$playerAPI->isInWeb() && !$playerAPI->isUnderBlock() && !$playerAPI->isInBoxBlock()){
                         $velocity = MathUtil::distance($location->asVector3(), $lastLocation->asVector3());
-                        if($velocity < 0.6 && $entity->getPing() < self::getData(self::PING_LAGGING)){
+                        if($velocity < 0.6 && $playerAPI->getPing() < self::getData(self::PING_LAGGING)){
                             $this->failed($entity);
                         }
                     }
-                    $entity->unsetExternalData("lastLocationV");
+                    $playerAPI->unsetExternalData("lastLocationV");
                 }else{
-                    $entity->setExternalData("lastLocationV", $location);
+                    $playerAPI->setExternalData("lastLocationV", $location);
                 }
             }
         }

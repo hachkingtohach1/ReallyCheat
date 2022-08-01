@@ -61,11 +61,11 @@ class AutoArmor extends Check{
     }
 
     //This only causes cheaters to slow down their actions
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
-        if($player->isInventoryOpen() && $player->isTransactionArmorInventory()){
-            $this->failed($player);               
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
+        if($playerAPI->isInventoryOpen() && $playerAPI->isTransactionArmorInventory()){
+            $this->failed($playerAPI);
         }else{
-            $player->setTransactionArmorInventory(false);
+            $playerAPI->setTransactionArmorInventory(false);
         }     
     }
 

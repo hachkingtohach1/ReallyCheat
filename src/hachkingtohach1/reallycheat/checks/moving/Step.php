@@ -61,37 +61,38 @@ class Step extends Check{
         return 3;
     }
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof PlayerMoveEvent){
+            $player = $event->getPlayer();
             if(
-                $player->getPing() > self::getData(self::PING_LAGGING) ||
-                !$player->isOnGround() ||
-                !$player->isSurvival() ||         
+                $playerAPI->getPing() > self::getData(self::PING_LAGGING) ||
+                !$playerAPI->isOnGround() ||
+                !$player->isSurvival() ||
                 $player->getAllowFlight() ||
                 $player->isFlying() ||
-                $player->isInLiquid() ||
-                $player->isOnAdhesion() ||
-                $player->getTeleportTicks() < 40 ||
-                $player->getAttackTicks() < 40 ||
-                $player->getDeathTicks() < 40 ||
-                $player->getPlacingTicks() < 40 ||
+                $playerAPI->isInLiquid() ||
+                $playerAPI->isOnAdhesion() ||
+                $playerAPI->getTeleportTicks() < 40 ||
+                $playerAPI->getAttackTicks() < 40 ||
+                $playerAPI->getDeathTicks() < 40 ||
+                $playerAPI->getPlacingTicks() < 40 ||
                 $event->isCancelled()
             ){
                 return;
             }
-            $lastY = $player->getExternalData("lastY");
+            $lastY = $playerAPI->getExternalData("lastY");
             $locationPlayer = $player->getLocation();
             $limit = 0.25;
             if($lastY !== null){
                 $diff = $locationPlayer->getY() - $lastY;
-                $limit += $player->isOnStairs() ? 0.5 : 0;
-                $limit += $player->getJumpTicks() < 40 ? 0.4 : 0;
+                $limit += $playerAPI->isOnStairs() ? 0.5 : 0;
+                $limit += $playerAPI->getJumpTicks() < 40 ? 0.4 : 0;
                 if($diff > $limit){
-                    $this->failed($player);
+                    $this->failed($playerAPI);
                 }
-                $player->unsetExternalData("lastY");
+                $playerAPI->unsetExternalData("lastY");
             }else{
-                $player->setExternalData("lastY", $locationPlayer->getY());
+                $playerAPI->setExternalData("lastY", $locationPlayer->getY());
             }
         }
     }

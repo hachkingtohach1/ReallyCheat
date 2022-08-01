@@ -63,19 +63,19 @@ class ScaffoldA extends Check{
         return 2;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{}
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{}
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{     
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof BlockPlaceEvent){
             $block = $event->getBlock();
             $posBlock = $block->getPosition();
-            $itemHand = $player->getInventory()->getItemInHand();
+            $itemHand = $playerAPI->getInventory()->getItemInHand();
             if($itemHand->getId() === ItemIds::AIR){
                 $x = $posBlock->getX();
                 $y = $posBlock->getY();
                 $z = $posBlock->getZ();
                 if($x > 1.0 || $y > 1.0 || $z > 1.0){
-                    $this->failed($player);
+                    $this->failed($playerAPI);
                 }
             }
         }

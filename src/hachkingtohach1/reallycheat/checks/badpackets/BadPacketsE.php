@@ -69,26 +69,27 @@ class BadPacketsE extends Check{
         return 3;
     }
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof PlayerInteractEvent){
             $this->interact = true;
         }
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{ 
-        if($player->getAttackTicks() > 40 || $this->interact){
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
+        if($playerAPI->getAttackTicks() > 40 || $this->interact){
             return;
         }
+        $player = $playerAPI->getPlayer();
         $locPlayer = $player->getLocation();
-        $delta = MathUtil::getDeltaDirectionVector($player, 3);	
-        $from = new Vector3($locPlayer->getX(), $locPlayer->getY() + $player->getEyeHeight(), $locPlayer->getZ());           
-        $to = $player->getLocation()->add($delta->getX(), $delta->getY() + $player->getEyeHeight(), $delta->getZ());		
+        $delta = MathUtil::getDeltaDirectionVector($playerAPI, 3);
+        $from = new Vector3($locPlayer->getX(), $locPlayer->getY() + $player->getEyeHeight(), $locPlayer->getZ());
+        $to = $player->getLocation()->add($delta->getX(), $delta->getY() + $player->getEyeHeight(), $delta->getZ());
         $distance = MathUtil::distance($from, $to);
         $vector = $to->subtract($from->x, $from->y, $from->z)->normalize()->multiply(1);
         $entities = [];
         for($i = 0; $i <= $distance; $i += 1){
             $from = $from->add($vector->x, $vector->y, $vector->z);
-            foreach($player->getWorld()->getEntities() as $target){	
+            foreach($player->getWorld()->getEntities() as $target){
                 $distanceA = new Vector3($from->x, $from->y, $from->z);
                 if($target->getPosition()->distance($distanceA) <= 2 && $target->getId() !== $player->getId()){
                     $entities[$target->getId()] = $target;
@@ -99,7 +100,7 @@ class BadPacketsE extends Check{
             if($packet->trData instanceof UseItemOnEntityTransactionData){
                 if($locPlayer->getPitch() < 30){
                     if(count($entities) < 1 && $player->getTargetBlock(10)->getId() !== BlockLegacyIds::AIR){
-                        $this->failed($player);
+                        $this->failed($playerAPI);
                     }
                 }
             }

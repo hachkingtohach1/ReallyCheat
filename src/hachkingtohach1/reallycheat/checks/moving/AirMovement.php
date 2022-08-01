@@ -60,35 +60,36 @@ class AirMovement extends Check{
         return 5;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
         $effects = [];
+        $player = $playerAPI->getPlayer();
         foreach($player->getEffects()->all() as $index => $effect){
             $transtable = $effect->getType()->getName()->getText();
             $effects[$transtable] = $effect->getEffectLevel() + 1;
         }
-        $nLocation = $player->getNLocation();
+        $nLocation = $playerAPI->getNLocation();
         if(!empty($nLocation)){
             if(               
-                $player->getAttackTicks() > 100 &&
-                $player->getTeleportTicks() > 100 &&
-                $player->getSlimeBlockTicks() > 200 &&
-                !$player->getAllowFlight() && 
-                !$player->isInLiquid() && 
-                !$player->isInWeb() && 
-                !$player->isOnGround() && 
-                !$player->isOnAdhesion() && 
+                $playerAPI->getAttackTicks() > 100 &&
+                $playerAPI->getTeleportTicks() > 100 &&
+                $playerAPI->getSlimeBlockTicks() > 200 &&
+                !$player->getAllowFlight() &&
+                !$playerAPI->isInLiquid() &&
+                !$playerAPI->isInWeb() &&
+                !$playerAPI->isOnGround() &&
+                !$playerAPI->isOnAdhesion() &&
                 $player->isSurvival() &&
-                $player->getLastGroundY() !== 0 &&                 
-                $nLocation["to"]->getY() > $player->getLastGroundY() && 
+                $playerAPI->getLastGroundY() !== 0.0 &&
+                $nLocation["to"]->getY() > $playerAPI->getLastGroundY() &&
                 $nLocation["to"]->getY() > $nLocation["from"]->getY() &&
-                $player->getOnlineTime() >= 30 &&
-                $player->getPing() < self::getData(self::PING_LAGGING)              
+                $playerAPI->getOnlineTime() >= 30 &&
+                $playerAPI->getPing() < self::getData(self::PING_LAGGING)
             ){     
-                $distance = $nLocation["to"]->getY() - $player->getLastGroundY();                                       
+                $distance = $nLocation["to"]->getY() - $playerAPI->getLastGroundY();
                 $limit = 2.2;
                 $limit += isset($effects["potion.jump"]) ? (pow($effects["potion.jump"] + 1.4, 2) / 16) : 0;
                 if($distance > $limit){
-                    $this->failed($player);
+                    $this->failed($playerAPI);
                 }            
             }           
         }

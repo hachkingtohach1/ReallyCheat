@@ -61,21 +61,21 @@ class BadPacketsO extends Check{
         return 1;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
         if(
-            $player->isDigging() || 
-            $player->getPlacingTicks() < 100 || 
-            $player->getAttackTicks() < 20 ||
-            !$player->isSurvival()
+            $playerAPI->isDigging() ||
+            $playerAPI->getPlacingTicks() < 100 ||
+            $playerAPI->getAttackTicks() < 20 ||
+            !$playerAPI->getPlayer()->isSurvival()
         ){
             return;
         }
         if($packet instanceof AnimatePacket){
             if(
                 $packet->action !== AnimatePacket::ACTION_SWING_ARM &&
-                $player->getAttackTicks() > 40
+                $playerAPI->getAttackTicks() > 40
             ){
-                $this->failed($player);
+                $this->failed($playerAPI);
             }
         }
     }

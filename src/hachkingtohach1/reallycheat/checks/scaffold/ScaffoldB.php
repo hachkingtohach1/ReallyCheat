@@ -62,17 +62,17 @@ class ScaffoldB extends Check{
         return 10;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{}
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{}
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{     
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof BlockPlaceEvent){
-            $pitch = abs($player->getLocation()->getPitch());
+            $pitch = abs($playerAPI->getLocation()->getPitch());
             if(
                 $pitch < 35 && 
-                $event->getBlock()->getPosition()->getY() < $player->getLocation()->getY() && 
-                $player->getPing() < self::getData(self::PING_LAGGING)
+                $event->getBlock()->getPosition()->getY() < $playerAPI->getLocation()->getY() &&
+                $playerAPI->getPing() < self::getData(self::PING_LAGGING)
             ){
-                $this->failed($player);
+                $this->failed($playerAPI);
             }
         }
     }

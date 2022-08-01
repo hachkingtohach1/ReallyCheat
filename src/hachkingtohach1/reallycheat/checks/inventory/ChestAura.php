@@ -65,22 +65,22 @@ class ChestAura extends Check{
         return 1;
     }
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{
-        $countTransaction = $player->getExternalData("countTransaction");
-        $timeOpenChest = $player->getExternalData("timeOpenChest");        
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
+        $countTransaction = $playerAPI->getExternalData("countTransaction");
+        $timeOpenChest = $playerAPI->getExternalData("timeOpenChest");
         if($event instanceof InventoryOpenEvent){
             if($timeOpenChest === null && !($event->getInventory() instanceof PlayerCraftingInventory)){
-                $player->setExternalData("timeOpenChest", microtime(true));
+                $playerAPI->setExternalData("timeOpenChest", microtime(true));
             }
         }
         if($event instanceof InventoryCloseEvent){
             if($timeOpenChest !== null && $countTransaction !== null){
                 $timeDiff = microtime(true) - $timeOpenChest;
                 if($timeDiff < $countTransaction / 3){
-                    $this->failed($player);
+                    $this->failed($playerAPI);
                 }
-                $player->unsetExternalData("timeOpenChest");
-                $player->unsetExternalData("countTransaction");
+                $playerAPI->unsetExternalData("timeOpenChest");
+                $playerAPI->unsetExternalData("countTransaction");
             }
         }
         if($event instanceof InventoryTransactionEvent){
@@ -88,9 +88,9 @@ class ChestAura extends Check{
             foreach($transaction->getInventories() as $inventory){
                 if($inventory instanceof PlayerInventory){
                     if($countTransaction !== null && $timeOpenChest !== null){
-                        $player->setExternalData("countTransaction", $countTransaction + 1);
+                        $playerAPI->setExternalData("countTransaction", $countTransaction + 1);
                     }else{
-                        $player->setExternalData("countTransaction", 0);
+                        $playerAPI->setExternalData("countTransaction", 0);
                     }
                 }
             }

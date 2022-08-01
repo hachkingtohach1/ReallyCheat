@@ -62,15 +62,15 @@ class BlockReach extends Check{
         return 5;
     }
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof PlayerInteractEvent){
             $block = $event->getBlock();  
             $posBlock = $block->getPosition();
-            $posPlayer = $player->getPosition();   
+            $posPlayer = $playerAPI->getPlayer()->getPosition();
             $isBlockTop = $posBlock->getY() > $posPlayer->getY() ? -1 : 0;
             $distance = abs(BlockUtil::distance($posPlayer, $posBlock) + $isBlockTop);
             if($distance > 6.5){
-                $this->failed($player);
+                $this->failed($playerAPI);
             }
         }
     }
