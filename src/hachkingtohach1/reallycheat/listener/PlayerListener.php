@@ -26,6 +26,7 @@ use hachkingtohach1\reallycheat\utils\Utils;
 use hachkingtohach1\reallycheat\utils\BlockUtil;
 use hachkingtohach1\reallycheat\player\RCPlayerAPI;
 use hachkingtohach1\reallycheat\components\registry\RCListener;
+use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\event\Event;
 use pocketmine\event\player\PlayerMoveEvent;
@@ -244,6 +245,11 @@ class PlayerListener extends RCListener{
 
         $playerAPI->setJumpTicks(microtime(true));
 
+    }
+
+    public function onPlayerQuit(PlayerQuitEvent $event){
+        RCPlayerAPI::getRCPlayer($event->getPlayer());
+        RCPlayerAPI::removeRCPlayer($event->getPlayer());
     }
 
     public function onPlayerJoin(PlayerJoinEvent $event){
