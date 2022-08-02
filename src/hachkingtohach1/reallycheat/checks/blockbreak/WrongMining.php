@@ -60,13 +60,13 @@ class WrongMining extends Check{
         return 1;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
-        $isCreative = $player->isCreative() ? 10 : 0;
-        if($player->actionBreakingSpecial() && (($player->getNumberBlocksAllowBreak() + $isCreative) < $player->getBlocksBrokeASec())){
-            $this->failed($player);
-            $player->setActionBreakingSpecial(false);
-            $player->setBlocksBrokeASec(0); 
-            $player->setFlagged(true);          
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
+        $isCreative = $playerAPI->getPlayer()->isCreative() ? 10 : 0;
+        if($playerAPI->actionBreakingSpecial() && (($playerAPI->getNumberBlocksAllowBreak() + $isCreative) < $playerAPI->getBlocksBrokeASec())){
+            $this->failed($playerAPI);
+            $playerAPI->setActionBreakingSpecial(false);
+            $playerAPI->setBlocksBrokeASec(0);
+            $playerAPI->setFlagged(true);
         }
     }
 

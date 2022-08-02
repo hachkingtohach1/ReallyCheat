@@ -63,16 +63,16 @@ class ScaffoldC extends Check{
         return 10;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{}
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{}
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{     
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof BlockPlaceEvent){
             $block = $event->getBlock();
             $posBlock = $block->getPosition();
-            $posPlayer = $player->getLocation();
+            $posPlayer = $playerAPI->getLocation();
             $distance = MathUtil::distance($posPlayer->asVector3(), $posBlock->asVector3());
             if($distance < 1.25 && abs($posPlayer->getPitch()) > 40){
-                $this->failed($player);     
+                $this->failed($playerAPI);
             }
         }
     }

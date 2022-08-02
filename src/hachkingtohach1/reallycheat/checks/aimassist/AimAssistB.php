@@ -61,16 +61,16 @@ class AimAssistB extends Check{
         return 2;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
         if($packet instanceof PlayerAuthInputPacket){    
-            $nLocation = $player->getNLocation();
+            $nLocation = $playerAPI->getNLocation();
             if(!empty($nLocation)){
                 $toYaw = $nLocation["to"]->getYaw();
                 $fromYaw = $nLocation["from"]->getYaw();               
                 $abs = abs($toYaw - $fromYaw);
                 if($abs >= 1 && fmod($abs, 0.1) == 0){
                     if(fmod($abs, 1.0) == 0 || fmod($abs, 10.0) == 0 || fmod($abs, 30.0) == 0){
-                        $this->failed($player);
+                        $this->failed($playerAPI);
                     }
                 }   
                 $toPitch = $nLocation["to"]->getPitch();
@@ -78,7 +78,7 @@ class AimAssistB extends Check{
                 $abs2 = abs($toPitch - $fromPitch);
                 if($abs2 >= 1 && fmod($abs2, 0.1) == 0){
                     if(fmod($abs2, 1.0) == 0 || fmod($abs2, 10.0) == 0 || fmod($abs2, 30.0) == 0){
-                        $this->failed($player);
+                        $this->failed($playerAPI);
                     }
                 }
             }

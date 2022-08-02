@@ -28,6 +28,7 @@ use hachkingtohach1\reallycheat\utils\MathUtil;
 use pocketmine\event\Event;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\player\Player;
 
 class Reach extends Check{
 
@@ -70,12 +71,13 @@ class Reach extends Check{
             $damager = $event->getDamager();
             $locEntity = $entity->getLocation();
             $locDamager = $damager->getLocation();  
-            if($cause === EntityDamageEvent::CAUSE_ENTITY_ATTACK && $damager instanceof RCPlayerAPI){
+            if($cause === EntityDamageEvent::CAUSE_ENTITY_ATTACK && $damager instanceof Player){
+                $playerAPI = RCPlayerAPI::getRCPlayer($damager);
                 $isPlayerTop = $locEntity->getY() > $locDamager->getY() ? ($locEntity->getY() - $locDamager->getY()) : 0;
                 $distance = MathUtil::distance($locEntity, $locDamager) - $isPlayerTop;
                 if($distance > 4.3){
-                    $this->failed($damager);
-                }         
+                    $this->failed($playerAPI);
+                }
             }
         }
     }

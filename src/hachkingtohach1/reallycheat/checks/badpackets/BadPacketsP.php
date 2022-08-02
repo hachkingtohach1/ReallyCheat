@@ -65,26 +65,26 @@ class BadPacketsP extends Check{
         return 1;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{ 
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
         if($packet instanceof ActorEventPacket){
             if($packet->eventId === ActorEvent::EATING_ITEM){       
-                $lastTick = $player->getExternalData("lastTickP");
+                $lastTick = $playerAPI->getExternalData("lastTickP");
                 if($lastTick === null){
-                    $player->setExternalData("lastTickP", microtime(true));
+                    $playerAPI->setExternalData("lastTickP", microtime(true));
                 }
             }
         }
     }
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof PlayerItemConsumeEvent){
             if($event->getItem() instanceof ConsumableItem){
-                $lastTick = $player->getExternalData("lastTickP");
+                $lastTick = $playerAPI->getExternalData("lastTickP");
                 if($lastTick !== null){
                     $diff = microtime(true) - $lastTick;
                     if($diff < 1.5){
                         $event->cancel();
-                        $player->unsetExternalData("lastTickP");
+                        $playerAPI->unsetExternalData("lastTickP");
                     }                   
                 }
             }

@@ -61,27 +61,27 @@ class BadPacketsQ extends Check{
         return 3;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
         if($packet instanceof PlayerAuthInputPacket){
-            if($player->getOnlineTime() < 10 || $player->getDeathTicks() < 40){           
+            if($playerAPI->getOnlineTime() < 10 || $playerAPI->getDeathTicks() < 40){
                 return;
             }
-            $point = $player->getExternalData("pointQ");
-            $lastTime = $player->getExternalData("lastTimeQ");                       
+            $point = $playerAPI->getExternalData("pointQ");
+            $lastTime = $playerAPI->getExternalData("lastTimeQ");
             if($lastTime === null && $point === null){
-                $player->setExternalData("lastTimeQ", microtime(true));
-                $player->setExternalData("pointQ", 1);
+                $playerAPI->setExternalData("lastTimeQ", microtime(true));
+                $playerAPI->setExternalData("pointQ", 1);
                 return;
             }
             $timeDiff = microtime(true) - $lastTime;
             if($timeDiff > 1){
                 if($point < 17){
-                    $this->failed($player);
+                    $this->failed($playerAPI);
                 }
-                $player->unsetExternalData("pointQ");
-                $player->unsetExternalData("lastTimeQ");
+                $playerAPI->unsetExternalData("pointQ");
+                $playerAPI->unsetExternalData("lastTimeQ");
             }else{
-                $player->setExternalData("pointQ", $point + 1);
+                $playerAPI->setExternalData("pointQ", $point + 1);
             }           
         }
     }

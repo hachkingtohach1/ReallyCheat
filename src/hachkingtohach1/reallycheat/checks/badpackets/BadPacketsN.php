@@ -61,25 +61,25 @@ class BadPacketsN extends Check{
         return 1;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
-        $ticks = $player->getExternalData("ticksN");
-        $lastTime = $player->getExternalData("lastTimeN");
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
+        $ticks = $playerAPI->getExternalData("ticksN");
+        $lastTime = $playerAPI->getExternalData("lastTimeN");
         if($packet instanceof InventoryTransactionPacket){
             if($packet->trData->getTypeId() === 0){
                 if($ticks !== null && $lastTime !== null){
                     $diff = microtime(true) - $lastTime;
                     if($diff > 0.1){
                         if($ticks > 1){
-                            $this->failed($player);
+                            $this->failed($playerAPI);
                         }
-                        $player->unsetExternalData("ticksN");
-                        $player->unsetExternalData("lastTimeN");
+                        $playerAPI->unsetExternalData("ticksN");
+                        $playerAPI->unsetExternalData("lastTimeN");
                     }else{
-                        $player->setExternalData("ticksN", $ticks + 1);
+                        $playerAPI->setExternalData("ticksN", $ticks + 1);
                     }
                 }else{
-                    $player->setExternalData("ticksN", 0);
-                    $player->setExternalData("lastTimeN", microtime(true));
+                    $playerAPI->setExternalData("ticksN", 0);
+                    $playerAPI->setExternalData("lastTimeN", microtime(true));
                 }
             }
         }

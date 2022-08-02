@@ -62,28 +62,28 @@ class BadPacketsH extends Check{
         return 1;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
-        if($player->getPlacingTicks() < 100){
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
+        if($playerAPI->getPlacingTicks() < 100){
             return;
         }
-        $ticks = $player->getExternalData("clicksTicks2");
-        $lastClick = $player->getExternalData("lastClick");
+        $ticks = $playerAPI->getExternalData("clicksTicks2");
+        $lastClick = $playerAPI->getExternalData("lastClick");
         if($packet instanceof LevelSoundEventPacket){
             if($packet->sound === LevelSoundEvent::ATTACK_NODAMAGE){
                 if($ticks !== null && $lastClick !== null){
                     $diff = microtime(true) - $lastClick;
                     if($diff > 2){
                         if($ticks >= 25){
-                            $this->failed($player);
+                            $this->failed($playerAPI);
                         }
-                        $player->unsetExternalData("clicksTicks2");
-                        $player->unsetExternalData("lastClick");
+                        $playerAPI->unsetExternalData("clicksTicks2");
+                        $playerAPI->unsetExternalData("lastClick");
                     }else{
-                        $player->setExternalData("clicksTicks2", $ticks + 1);
+                        $playerAPI->setExternalData("clicksTicks2", $ticks + 1);
                     }
                 }else{
-                    $player->setExternalData("clicksTicks2", 0);
-                    $player->setExternalData("lastClick", microtime(true));
+                    $playerAPI->setExternalData("clicksTicks2", 0);
+                    $playerAPI->setExternalData("lastClick", microtime(true));
                 }
             }
         }

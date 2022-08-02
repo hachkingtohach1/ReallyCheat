@@ -60,13 +60,13 @@ class FillBlock extends Check{
         return 1;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{
-        $isCreative = $player->isCreative() ? 10 : 0;
-        if($player->actionPlacingSpecial() && (($player->getNumberBlocksAllowPlace() + $isCreative) < $player->getBlocksPlacedASec())){
-            $this->failed($player);
-            $player->setActionPlacingSpecial(false);
-            $player->setBlocksPlacedASec(0); 
-            $player->setFlagged(true);          
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
+        $isCreative = $playerAPI->getPlayer()->isCreative() ? 10 : 0;
+        if($playerAPI->actionPlacingSpecial() && (($playerAPI->getNumberBlocksAllowPlace() + $isCreative) < $playerAPI->getBlocksPlacedASec())){
+            $this->failed($playerAPI);
+            $playerAPI->setActionPlacingSpecial(false);
+            $playerAPI->setBlocksPlacedASec(0);
+            $playerAPI->setFlagged(true);
         }
     }
 

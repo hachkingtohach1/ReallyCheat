@@ -23,21 +23,8 @@
 namespace hachkingtohach1\reallycheat\api;
 
 use hachkingtohach1\reallycheat\RCAPIProvider;
-use hachkingtohach1\reallycheat\player\RCPlayerAPI;
-use hachkingtohach1\reallycheat\components\player\RCPlayer;
 
 class API{
-
-    public static function getAPI() :self{
-        return new API();
-    }
-
-    public function getRCPlayer(RCPlayer $player) :mixed{
-		if($player instanceof RCPlayerAPI){
-			return $player;
-		}
-		return $player;		
-	}
 
     public function getVersion() :string{
         return RCAPIProvider::VERSION_PLUGIN;

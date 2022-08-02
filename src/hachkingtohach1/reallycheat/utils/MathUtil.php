@@ -27,12 +27,12 @@ use pocketmine\math\Vector3;
 
 class MathUtil{
 
-    public static function getVectorOnEyeHeight(RCPlayerAPI $player){
-        return $player->getLocation()->add(0, $player->getEyeHeight(), 0);
+    public static function getVectorOnEyeHeight(RCPlayerAPI $playerAPI){
+        return $playerAPI->getPlayer()->getLocation()->add(0, $playerAPI->getPlayer()->getEyeHeight(), 0);
     }
 
-    public static function getDeltaDirectionVector(RCPlayerAPI $player, float $distance) :Vector3{
-        return $player->getDirectionVector()->multiply($distance);
+    public static function getDeltaDirectionVector(RCPlayerAPI $playerAPI, float $distance) :Vector3{
+        return $playerAPI->getPlayer()->getDirectionVector()->multiply($distance);
     }
 
     public static function distance(Vector3 $from, Vector3 $to){

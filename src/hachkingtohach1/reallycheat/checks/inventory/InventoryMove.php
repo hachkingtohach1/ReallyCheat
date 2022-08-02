@@ -61,10 +61,10 @@ class InventoryMove extends Check{
         return 30;
     }
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{ 
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof PlayerMoveEvent){
-            if($player->isOnGround() && !$player->isInLiquid() && !$player->isInWeb() && $player->isInventoryOpen()){
-                $this->failed($player);
+            if($playerAPI->isOnGround() && !$playerAPI->isInLiquid() && !$playerAPI->isInWeb() && $playerAPI->isInventoryOpen()){
+                $this->failed($playerAPI);
             }
         }
     }

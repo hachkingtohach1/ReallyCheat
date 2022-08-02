@@ -62,34 +62,34 @@ class SpamA extends Check{
         return 5;
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{}
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{}
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{     
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof PlayerChatEvent){
-            $chatTick = $player->getExternalData("SpamATick");
-            $violationChat = $player->getExternalData("ViolationSpamA");
+            $chatTick = $playerAPI->getExternalData("SpamATick");
+            $violationChat = $playerAPI->getExternalData("ViolationSpamA");
             if(!$event->isCancelled()){
                 if($chatTick !== null || $violationChat !== null){
                     $diff = microtime(true) - $chatTick;
                     if($diff <= self::getData(self::CHAT_SPAM_DELAY)){
                         if($violationChat <= 5){                       
-                            $player->sendMessage($this->replaceText($player, self::getData(self::CHAT_SPAM_TEXT), $this->getName(), $this->getSubType()));
-                            $player->setExternalData("SpamATick", microtime(true));
-                            $player->setExternalData("ViolationSpamA", $violationChat + 1);
-                            $this->failed($player);
+                            $playerAPI->getPlayer()->sendMessage($this->replaceText($playerAPI, self::getData(self::CHAT_SPAM_TEXT), $this->getName(), $this->getSubType()));
+                            $playerAPI->setExternalData("SpamATick", microtime(true));
+                            $playerAPI->setExternalData("ViolationSpamA", $violationChat + 1);
+                            $this->failed($playerAPI);
                             $event->cancel();
                         }else{                          
-                            $player->setExternalData("SpamATick", microtime(true));
-                            $player->setExternalData("ViolationSpamA", 0);
+                            $playerAPI->setExternalData("SpamATick", microtime(true));
+                            $playerAPI->setExternalData("ViolationSpamA", 0);
                             $event->cancel();
                         }
                     }else{
-                        $player->setExternalData("SpamATick", microtime(true));
-                        $player->setExternalData("ViolationSpamA", 0);
+                        $playerAPI->setExternalData("SpamATick", microtime(true));
+                        $playerAPI->setExternalData("ViolationSpamA", 0);
                     }
                 }else{
-                    $player->setExternalData("SpamATick", microtime(true));
-                    $player->setExternalData("ViolationSpamA", 0);
+                    $playerAPI->setExternalData("SpamATick", microtime(true));
+                    $playerAPI->setExternalData("ViolationSpamA", 0);
                 }
             }
         }

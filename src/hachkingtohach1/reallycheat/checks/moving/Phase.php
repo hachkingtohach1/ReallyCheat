@@ -63,13 +63,14 @@ class Phase extends Check{
         return 1;
     }
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof PlayerMoveEvent){
+            $player = $event->getPlayer();
             $world = $player->getWorld();
-            $block = $world->getBlock($player->getLocation()->asVector3()->add(0, 0.75, 0));           
+            $block = $world->getBlock($player->getLocation()->asVector3()->add(0, 0.75, 0));
             $skip = [BlockLegacyIds::SAND, BlockLegacyIds::GRAVEL, BlockLegacyIds::ANVIL, BlockLegacyIds::AIR];
             $skip2 = [BlockLegacyIds::TORCH, BlockLegacyIds::SIGN_POST, BlockLegacyIds::WALL_SIGN, BlockLegacyIds::REDSTONE_TORCH, BlockLegacyIds::REDSTONE_WIRE, BlockLegacyIds::SEA_PICKLE, BlockLegacyIds::REPEATER_BLOCK, BlockLegacyIds::LANTERN, BlockLegacyIds::COMPARATOR_BLOCK];
-            if($player->isSurvival() && !$player->isOnCarpet() && !$player->isOnPlate() && !$player->isOnDoor() && !$player->isOnSnow() && !$player->isOnPlant() && !$player->isOnAdhesion() && !$player->isOnStairs() && !$player->isInLiquid() && !$player->isInWeb() && !in_array($block->getId(), $skip) && !BlockUtil::isUnderBlock($event->getTo(), $skip2, 0)){
+            if($player->isSurvival() && !$playerAPI->isOnCarpet() && !$playerAPI->isOnPlate() && !$playerAPI->isOnDoor() && !$playerAPI->isOnSnow() && !$playerAPI->isOnPlant() && !$playerAPI->isOnAdhesion() && !$playerAPI->isOnStairs() && !$playerAPI->isInLiquid() && !$playerAPI->isInWeb() && !in_array($block->getId(), $skip) && !BlockUtil::isUnderBlock($event->getTo(), $skip2, 0)){
                 $event->cancel();
             }
         }

@@ -66,20 +66,20 @@ class BadPacketsF extends Check{
         return 1;
     }
 
-    public function checkEvent(Event $event, RCPlayerAPI $player) :void{
+    public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof BlockPlaceEvent){
             $this->place = true;
         }
     }
 
-    public function check(DataPacket $packet, RCPlayerAPI $player) :void{ 
+    public function check(DataPacket $packet, RCPlayerAPI $playerAPI) :void{
         if($packet instanceof InventoryTransactionPacket){
             if(
                 $packet->trData instanceof ReleaseItemTransactionData && 
                 $this->place && 
-                $player->getTeleportTicks() > 100
+                $playerAPI->getTeleportTicks() > 100
             ){
-                $this->failed($player);
+                $this->failed($playerAPI);
             }
         }
     }

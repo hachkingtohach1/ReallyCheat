@@ -26,6 +26,7 @@ use hachkingtohach1\reallycheat\utils\Utils;
 use hachkingtohach1\reallycheat\utils\BlockUtil;
 use hachkingtohach1\reallycheat\player\RCPlayerAPI;
 use hachkingtohach1\reallycheat\components\registry\RCListener;
+use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\event\Event;
 use pocketmine\event\player\PlayerMoveEvent;
@@ -53,6 +54,7 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
+use pocketmine\player\Player;
 
 class PlayerListener extends RCListener{
 
@@ -64,14 +66,11 @@ class PlayerListener extends RCListener{
     
     public function __construct(){}
 
-    public function onPlayerCreation(PlayerCreationEvent $event) {
-		$event->setPlayerClass(RCPlayerAPI::class);
-	}
-
     public function onDataPacketReceive(DataPacketReceiveEvent $event) :void{
         $packet = $event->getPacket();
         $player = $event->getOrigin()->getPlayer();
-        if($player instanceof RCPlayerAPI){           
+        if($player !== null){
+            $playerAPI = RCPlayerAPI::getRCPlayer($player);
             foreach(self::FILES as $file){
                 Utils::callDirectory("checks/$file", function (string $namespace) use($packet, $player): void{
                     $class = new $namespace();
@@ -82,65 +81,66 @@ class PlayerListener extends RCListener{
             }                
             if($packet instanceof LevelSoundEventPacket){
                 if($packet->sound === LevelSoundEvent::ATTACK_NODAMAGE){
-                    $this->addCPS($player);
-                    $player->setCPS($this->getCPS($player));
+                    $this->addCPS($playerAPI);
+                    $playerAPI->setCPS($this->getCPS($playerAPI));
                 }
             }
             if($packet instanceof InventoryTransactionPacket){
                 if($packet->trData instanceof UseItemOnEntityTransactionData){
-                    $this->addCPS($player);
-                    $player->setCPS($this->getCPS($player));                 
+                    $this->addCPS($playerAPI);
+                    $playerAPI->setCPS($this->getCPS($playerAPI));
                 }
             }         
         }
     }
 
-	public function onPlayerMove(PlayerMoveEvent $event) :void{
+    public function onPlayerMove(PlayerMoveEvent $event) :void{
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){
-            $this->checkEvent($event, $player);           
-            if($player->isFlagged()){
-                $event->cancel(); 
-                $player->setFlagged(false);
-            }
-            $player->setNLocation($event->getFrom(), $event->getTo());
-            $player->setOnGround(BlockUtil::isOnGround($event->getTo(), 0) || BlockUtil::isOnGround($event->getTo(), 1));
-            if($player->isOnGround()){
-                $player->setLastGroundY($player->getPosition()->getY());
-            }else{             
-                $player->setLastNoGroundY($player->getPosition()->getY());
-            }    
-            if(BlockUtil::onSlimeBlock($event->getTo(), 0) || BlockUtil::onSlimeBlock($event->getTo(), 1)){ 
-                $player->setSlimeBlockTicks(microtime(true));     
-            }
-            $player->setOnIce(BlockUtil::isOnIce($event->getTo(), 1) || BlockUtil::isOnIce($event->getTo(), 2));
-            $player->setOnStairs(BlockUtil::isOnStairs($event->getTo(), 0) || BlockUtil::isOnStairs($event->getTo(), 1));
-            $player->setUnderBlock(BlockUtil::isOnGround($player->getLocation(), -2));
-            $player->setInLiquid(BlockUtil::isOnLiquid($event->getTo(), 0) || BlockUtil::isOnLiquid($event->getTo(), 1));
-            $player->setOnAdhesion(BlockUtil::isOnAdhesion($event->getTo(), 0));
-            $player->setOnPlant(BlockUtil::isOnPlant($event->getTo(), 0));
-            $player->setOnDoor(BlockUtil::isOnDoor($event->getTo(), 0));
-            $player->setOnCarpet(BlockUtil::isOnCarpet($event->getTo(), 0));
-            $player->setOnPlate(BlockUtil::isOnPlate($event->getTo(), 0));
-            $player->setOnSnow(BlockUtil::isOnSnow($event->getTo(), 0));
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+
+        $this->checkEvent($event, $playerAPI);
+        if($playerAPI->isFlagged()){
+            $event->cancel();
+            $playerAPI->setFlagged(false);
         }
+        $playerAPI->setNLocation($event->getFrom(), $event->getTo());
+        $playerAPI->setOnGround(BlockUtil::isOnGround($event->getTo(), 0) || BlockUtil::isOnGround($event->getTo(), 1));
+        if($playerAPI->isOnGround()){
+            $playerAPI->setLastGroundY($player->getPosition()->getY());
+        }else{
+            $playerAPI->setLastNoGroundY($player->getPosition()->getY());
+        }
+        if(BlockUtil::onSlimeBlock($event->getTo(), 0) || BlockUtil::onSlimeBlock($event->getTo(), 1)){
+            $playerAPI->setSlimeBlockTicks(microtime(true));
+        }
+        $playerAPI->setOnIce(BlockUtil::isOnIce($event->getTo(), 1) || BlockUtil::isOnIce($event->getTo(), 2));
+        $playerAPI->setOnStairs(BlockUtil::isOnStairs($event->getTo(), 0) || BlockUtil::isOnStairs($event->getTo(), 1));
+        $playerAPI->setUnderBlock(BlockUtil::isOnGround($player->getLocation(), -2));
+        $playerAPI->setInLiquid(BlockUtil::isOnLiquid($event->getTo(), 0) || BlockUtil::isOnLiquid($event->getTo(), 1));
+        $playerAPI->setOnAdhesion(BlockUtil::isOnAdhesion($event->getTo(), 0));
+        $playerAPI->setOnPlant(BlockUtil::isOnPlant($event->getTo(), 0));
+        $playerAPI->setOnDoor(BlockUtil::isOnDoor($event->getTo(), 0));
+        $playerAPI->setOnCarpet(BlockUtil::isOnCarpet($event->getTo(), 0));
+        $playerAPI->setOnPlate(BlockUtil::isOnPlate($event->getTo(), 0));
+        $playerAPI->setOnSnow(BlockUtil::isOnSnow($event->getTo(), 0));
     }
 
     public function onPlayerInteract(PlayerInteractEvent $event) :void{
         $player = $event->getPlayer();
-        $block = $event->getBlock();        
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+        $block = $event->getBlock();
         if(!isset($this->blockInteracted[$player->getXuid()])){
             $this->blockInteracted[$player->getXuid()] = $block;
         }else{
             unset($this->blockInteracted[$player->getXuid()]);
         }
-        if($player instanceof RCPlayerAPI){
-            if($player->isFlagged()){
-                $event->cancel(); 
-                $player->setFlagged(false);
-            }
-            $this->checkEvent($event, $player);     
+
+        if($playerAPI->isFlagged()){
+            $event->cancel();
+            $playerAPI->setFlagged(false);
         }
+        $this->checkEvent($event, $playerAPI);
+
     }
 
     public function onPlayerBreak(BlockBreakEvent $event) :void{
@@ -148,25 +148,25 @@ class PlayerListener extends RCListener{
         $x = $block->getPosition()->getX();
         $z = $block->getPosition()->getZ();
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){ 
-            $this->checkEvent($event, $player);
-            if($player->isFlagged()){
-                $event->cancel(); 
-                $player->setFlagged(false);
-            } 
-            if(isset($this->blockInteracted[$player->getXuid()])){
-                $blockInteracted = $this->blockInteracted[$player->getXuid()];       
-                $xI = $blockInteracted->getPosition()->getX();
-                $zI = $blockInteracted->getPosition()->getZ();
-                if((int)$x != (int)$xI && (int)$z != (int)$zI){                  
-                    $player->setActionBreakingSpecial(true);
-                    $player->setBlocksBrokeASec($player->getBlocksBrokeASec() + 1);                   
-                }else{
-                    $player->setBlocksBrokeASec(0);  
-                    unset($this->blockInteracted[$player->getXuid()]);
-                }
-            }           
-		}
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+
+        $this->checkEvent($event, $playerAPI);
+        if($playerAPI->isFlagged()){
+            $event->cancel();
+            $playerAPI->setFlagged(false);
+        }
+        if(isset($this->blockInteracted[$player->getXuid()])){
+            $blockInteracted = $this->blockInteracted[$player->getXuid()];
+            $xI = $blockInteracted->getPosition()->getX();
+            $zI = $blockInteracted->getPosition()->getZ();
+            if((int)$x != (int)$xI && (int)$z != (int)$zI){
+                $playerAPI->setActionBreakingSpecial(true);
+                $playerAPI->setBlocksBrokeASec($playerAPI->getBlocksBrokeASec() + 1);
+            }else{
+                $playerAPI->setBlocksBrokeASec(0);
+                unset($this->blockInteracted[$player->getXuid()]);
+            }
+        }
     }
 
     public function onPlayerPlace(BlockPlaceEvent $event) :void{
@@ -174,83 +174,89 @@ class PlayerListener extends RCListener{
         $x = $block->getPosition()->getX();
         $z = $block->getPosition()->getZ();
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){ 
-            $player->setPlacingTicks(microtime(true));
-            $this->checkEvent($event, $player);           
-            if($player->isFlagged()){
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+
+            $playerAPI->setPlacingTicks(microtime(true));
+            $this->checkEvent($event, $playerAPI);
+            if($playerAPI->isFlagged()){
                 $event->cancel(); 
-                $player->setFlagged(false);
+                $playerAPI->setFlagged(false);
             }
             if(isset($this->blockInteracted[$player->getXuid()])){
-                $blockInteracted = $this->blockInteracted[$player->getXuid()];       
+                $blockInteracted = $this->blockInteracted[$player->getXuid()];
                 $xI = $blockInteracted->getPosition()->getX();
                 $zI = $blockInteracted->getPosition()->getZ();
                 if((int)$x != (int)$xI && (int)$z != (int)$zI){
-                    $player->setActionPlacingSpecial(true);
-                    $player->setBlocksPlacedASec($player->getBlocksPlacedASec() + 1);                                      
+                    $playerAPI->setActionPlacingSpecial(true);
+                    $playerAPI->setBlocksPlacedASec($playerAPI->getBlocksPlacedASec() + 1);
                 }else{
-                    $player->setBlocksPlacedASec(0);
-                    unset($this->blockInteracted[$player->getXuid()]);  
+                    $playerAPI->setBlocksPlacedASec(0);
+                    unset($this->blockInteracted[$player->getXuid()]);
                 }            
             }
-		}
+
     }
 
     public function onPlayerItemUse(PlayerItemUseEvent $event){
-        $player = $event->getPlayer();       
-        if($player instanceof RCPlayerAPI){
-            //TODO
-        }
+        $player = $event->getPlayer();
+        //TODO
     }
+
 
     public function onInventoryTransaction(InventoryTransactionEvent $event){
         $player = $event->getTransaction()->getSource();
-        if($player instanceof RCPlayerAPI){
-            $this->checkEvent($event, $player);
-            foreach($event->getTransaction()->getInventories() as $inventory){          
-                if($inventory instanceof ArmorInventory){
-                    $player->setTransactionArmorInventory(true);
-                }
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+
+        $this->checkEvent($event, $playerAPI);
+        foreach($event->getTransaction()->getInventories() as $inventory){
+            if($inventory instanceof ArmorInventory){
+                $playerAPI->setTransactionArmorInventory(true);
             }
         }
     }
 
     public function onInventoryOpen(InventoryOpenEvent $event){
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){
-            $player->setInventoryOpen(true);
-            $this->checkEvent($event, $player);
-        }
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+        $playerAPI->setInventoryOpen(true);
+        $this->checkEvent($event, $playerAPI);
     }
 
     public function onInventoryClose(InventoryCloseEvent $event){
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){
-            $player->setInventoryOpen(false);
-            $this->checkEvent($event, $player);
-        }
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+        $playerAPI->setInventoryOpen(false);
+        $this->checkEvent($event, $playerAPI);
+
     }
 
     public function onEntityTeleport(EntityTeleportEvent $event){
         $entity = $event->getEntity();
-        if($entity instanceof RCPlayerAPI){
-            $entity->setTeleportTicks(microtime(true));
+        if(!$entity instanceof Player){
+            return;
         }
+        $playerAPI = RCPlayerAPI::getRCPlayer($entity);
+        $playerAPI->setTeleportTicks(microtime(true));
     }
 
     public function onPlayerJump(PlayerJumpEvent $event){
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){
-            $player->setJumpTicks(microtime(true));         
-        }
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+
+        $playerAPI->setJumpTicks(microtime(true));
+
+    }
+
+    public function onPlayerQuit(PlayerQuitEvent $event){
+        RCPlayerAPI::getRCPlayer($event->getPlayer());
+        RCPlayerAPI::removeRCPlayer($event->getPlayer());
     }
 
     public function onPlayerJoin(PlayerJoinEvent $event){
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){
-            $this->checkEvent($event, $player);
-            $player->setJoinedAtTheTime(microtime(true));
-        }
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+        $this->checkEvent($event, $playerAPI);
+        $playerAPI->setJoinedAtTheTime(microtime(true));
     }
 
     public function onPlayerPreLogin(PlayerPreLoginEvent $event){
@@ -265,68 +271,68 @@ class PlayerListener extends RCListener{
         $cause = $event->getCause();
         $entity = $event->getEntity();
         $damager = $event->getDamager();
+        if(!$damager instanceof Player){
+            return;
+        }
+        $playerAPI = RCPlayerAPI::getRCPlayer($damager);
         $this->checkJustEvent($event); 
-        if($cause === EntityDamageEvent::CAUSE_ENTITY_ATTACK && $damager instanceof RCPlayerAPI){
-			//$event->setAttackCooldown(1);
-            if($entity instanceof RCPlayerAPI){               
-                $entity->setAttackTicks(microtime(true));               
+        if($cause === EntityDamageEvent::CAUSE_ENTITY_ATTACK){
+            //$event->setAttackCooldown(1);
+            if($entity instanceof Player){
+                RCPlayerAPI::getRCPlayer($entity)->setAttackTicks(microtime(true));
             }   
-            if($damager->isFlagged()){
+            if($playerAPI->isFlagged()){
                 $event->cancel(); 
-                $damager->setFlagged(false);
+                $playerAPI->setFlagged(false);
             }      
-            $damager->setAttackTicks(microtime(true));           
+            $playerAPI->setAttackTicks(microtime(true));
         }
         if(in_array($cause, [EntityDamageEvent::CAUSE_ENTITY_EXPLOSION, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION])){
-            if($entity instanceof RCPlayerAPI){               
-                $entity->setAttackTicks(microtime(true));               
-            } 
+            RCPlayerAPI::getRCPlayer($entity)->setAttackTicks(microtime(true));
         }
     }
 
     public function onPlayerDeath(PlayerDeathEvent $event){
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){
-            $player->setDeathTicks(microtime(true));
-        }
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+        $playerAPI->setDeathTicks(microtime(true));
     }
 
     public function onPlayerChat(PlayerChatEvent $event){
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){ 
-            $this->checkEvent($event, $player);
-        }
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+        $this->checkEvent($event, $playerAPI);
     }
 
     public function onPlayerItemHeld(PlayerItemHeldEvent $event){
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){ 
-            $this->checkJustEvent($event);
-        }
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+        $this->checkEvent($event, $playerAPI);
     }
 
     public function onCommandEvent(CommandEvent $event){
         $sender = $event->getSender();
-        if($sender instanceof RCPlayerAPI){ 
-            $this->checkEvent($event, $sender);
+        if(!$sender instanceof Player){
+            return;
         }
+        $playerAPI = RCPlayerAPI::getRCPlayer($sender);
+        $this->checkEvent($event, $playerAPI);
     }
 
     public function onPlayerItemConsume(PlayerItemConsumeEvent $event){
         $player = $event->getPlayer();
-        if($player instanceof RCPlayerAPI){
-            $this->checkEvent($event, $player);
-        }
+        $playerAPI = RCPlayerAPI::getRCPlayer($player);
+        $this->checkEvent($event, $playerAPI);
     }
 
     private function addCPS(RCPlayerAPI $player) :void{
         $time = microtime(true);
-        $this->clicksData[$player->getName()][] = $time;
+        $this->clicksData[$player->getPlayer()->getName()][] = $time;
     }
 
     private function getCPS(RCPlayerAPI $player) :int{
         $newTime = microtime(true);
-        return count(array_filter($this->clicksData[$player->getName()] ?? [], static function(float $lastTime) use ($newTime):bool{
+        return count(array_filter($this->clicksData[$player->getPlayer()->getName()] ?? [], static function(float $lastTime) use ($newTime):bool{
             return ($newTime - $lastTime) <= self::DELTAL_TIME_CLICK;
         }));
     }
