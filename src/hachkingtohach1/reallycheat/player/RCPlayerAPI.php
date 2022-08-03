@@ -522,4 +522,13 @@ class RCPlayerAPI implements IPlayerAPI{
     public function setCaptchaCode(string $data) :void{
         $this->captchaCode = $data;
     }
+    
+    public function getInventory(){
+        return $this->player->getInventory();
+    }
+
+    public function getLocation(){
+        return $this->player->getLocation();
+    }
+    
 }
