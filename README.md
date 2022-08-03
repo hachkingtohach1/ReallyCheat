@@ -4,13 +4,14 @@
 
 # ReallyCheat ✔
 - This is config example version: 0.0.1
-- Support software: ```PocketMine-PMMP```          (Nukkit is Next)
-- Author: ```hachkingtohach1(DragoVN)```
-```---
+- Support software: `PocketMine-PMMP` (Nukkit is Next)
+- Author: `hachkingtohach1(DragoVN)`
+```yaml
+---
 # -----------------------------------------------------------------------------------------
 #
 # Modules can detect
-# 
+#
 # AutoClick                      - (Transfer)                   100% detect
 # RapidHit                       - (Transfer)                   100% detect
 # KillAura                       - (Transfer)                   100% detect
@@ -49,7 +50,7 @@
 # Nuker, FastBreak, FillBlock    - (Ban Immediately)            100% detect
 #      >> This is module using a special method that requires an API <<
 #    <If the server you are using a method intended for the digging of special players.>
-#       Example: 
+#       Example:
 #              <<
 #                 // $player must instance of Player from PMMP //
 #                 $api = API::getInstance()->getRCPlayer($player);
@@ -70,22 +71,22 @@ reallycheat:
         #This is to limit the player's access to the same address to the server.
         limit: 3
         message: "§cSorry the server can't allow access to cross the line."
-    ping: 
+    ping:
         #This is a customization that helps ReallyCheat test the best cheating players.
         #This is the buyer's discretion if you have custom errors with your server we will not be responsible.
         normal: 20
-        lagging: 200   
+        lagging: 200
     proxy:
         ##This is a feature that is still in the development stage. DON'T ENABLE
         enable: false #Enabling this feature will help every server you're running on your computer be protected by ReallyCheat.
         ip: 127.0.0.1
         port: 19132
-    process: 
+    process:
         auto: true #Enabling this mode will allow ReallyCheat to automatically handle the behavior and issue penalties to the player.
-    alerts: 
+    alerts:
         message: "{prefix} §f{player} §7failed §f{module} §7(§c{subtype}§7) §7VL §2{violation}"
         enable: true
-        admin: false #This will cause the in-game cheat detector to send it to the person with the permissions below 
+        admin: false #This will cause the in-game cheat detector to send it to the person with the permissions below
         permission: "reallycheat.notify"
     ban:
         commands:
@@ -95,8 +96,8 @@ reallycheat:
         randomize: false
         recentlogs:
             message: "{time} > {player} failed {module} ({subtype}) VL {violation} | penalty: BAN"
-    transfer:             
-        ip: "play.example.net:19132" #If "usecommand" enabled, it will not work  
+    transfer:
+        ip: "play.example.net:19132" #If "usecommand" enabled, it will not work
         usecommand:
             enable: false
             commands:
@@ -105,7 +106,7 @@ reallycheat:
         message: "{prefix} §f{player} §chas been kicked from server for hacking or abuse."
         randomize: false
         recentlogs:
-            message: "{time} > {player} failed {module} ({subtype}) VL {violation} | penalty: TRANSFER"       
+            message: "{time} > {player} failed {module} ({subtype}) VL {violation} | penalty: TRANSFER"
     captcha:
         enable: true
         text: "{prefix} §cType §b{code} §cto get rid of mute!"
@@ -124,7 +125,7 @@ reallycheat:
         webhook: ""
         player:
             joined:
-                enable: false 
+                enable: false
                 text: "{player} has joined the server!"
             left:
                 enable: false
@@ -137,7 +138,7 @@ reallycheat:
                 text: "{player} has been removed from server for hacking or abuse! When using: {module}"
         server:
             lagging:
-                enable: false 
+                enable: false
                 text: "Server is lagging! ReallyCheat can't check hacker! Tick: {tick}"
     chat:
         spam:
@@ -151,13 +152,13 @@ reallycheat:
         repeat:
             text: "{prefix} §cSo sorry! Don't go back to your chat last time!"
     check:
-        autoclick: 
+        autoclick:
             enable: true
             maxvl: 1
-        killaura: 
+        killaura:
             enable: true
             maxvl: 1
-        aimassist: 
+        aimassist:
             enable: true
             maxvl: 1
         wrongpitch:
@@ -199,7 +200,7 @@ reallycheat:
         reach:
             enable: true
             maxvl: 1
-        fly: 
+        fly:
             enable: true
             maxvl: 1
         autoarmor:
@@ -231,5 +232,7 @@ reallycheat:
             maxvl: 1
         timer:
             enable: true
-            maxvl: 3
-...```
+            maxvl: 1
+...
+
+```
