@@ -72,10 +72,10 @@ class PlayerListener extends RCListener{
         if($player !== null){
             $playerAPI = RCPlayerAPI::getRCPlayer($player);
             foreach(self::FILES as $file){
-                Utils::callDirectory("checks/$file", function (string $namespace) use($packet, $player): void{
+                Utils::callDirectory("checks/$file", function (string $namespace) use($packet, $playerAPI): void{
                     $class = new $namespace();
                     if($class->enable()){                                       
-                        $class->check($packet, $player);
+                        $class->check($packet, $playerAPI);
                     }
                 });
             }                
