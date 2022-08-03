@@ -41,7 +41,7 @@ class ReplaceText extends ConfigManager{
         ];
         $replace = [
             self::getData(self::PREFIX), 
-            $player->getName(), 
+            $player->getPlayer()->getName(), 
             $module, 
             $subType,
             date("F d, Y h:i:sA", time()), 
