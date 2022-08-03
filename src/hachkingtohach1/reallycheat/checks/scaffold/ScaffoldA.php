@@ -69,7 +69,7 @@ class ScaffoldA extends Check{
         if($event instanceof BlockPlaceEvent){
             $block = $event->getBlock();
             $posBlock = $block->getPosition();
-            $itemHand = $playerAPI->getInventory()->getItemInHand();
+            $itemHand = $playerAPI->getPlayer()->getInventory()->getItemInHand();
             if($itemHand->getId() === ItemIds::AIR){
                 $x = $posBlock->getX();
                 $y = $posBlock->getY();
