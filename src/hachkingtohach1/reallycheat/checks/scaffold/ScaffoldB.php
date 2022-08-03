@@ -66,7 +66,7 @@ class ScaffoldB extends Check{
 
     public function checkEvent(Event $event, RCPlayerAPI $playerAPI) :void{
         if($event instanceof BlockPlaceEvent){
-            $pitch = abs($playerAPI->getPlayer()->getLocation()->getPitch());
+            $pitch = abs($playerAPI->getLocation()->getPitch());
             if(
                 $pitch < 35 && 
                 $event->getBlock()->getPosition()->getY() < $playerAPI->getLocation()->getY() &&
