@@ -38,41 +38,41 @@ use pocketmine\command\CommandSender;
 
 class RCAPIProvider extends PluginBase implements IRCAPI{
 
-	private static $instance = null;
+    private static $instance;
     private ProxyUDPSocket $proxyUDPSocket;
 
-	public const VERSION_PLUGIN = "2.1.5";
+    public const VERSION_PLUGIN = "2.1.5";
 
-	public function onLoad() :void{
+    public function onLoad() : void {
         self::$instance = $this;
-	}
-	
-	public static function getInstance(): self{
+    }
+
+    public static function getInstance() : RCAPIProvider {
         return self::$instance;
     }
 
-    public function onEnable() :void{			
-		$this->proxyUDPSocket = new ProxyUDPSocket();
-		if(ConfigManager::getData(ConfigManager::PROXY_ENABLE)){
-			$ip = ConfigManager::getData(ConfigManager::PROXY_IP);
-			$port = ConfigManager::getData(ConfigManager::PROXY_PORT);
-			try{
-				$this->proxyUDPSocket->bind(new InternetAddress($ip, $port));
-			}catch (\Exception $exception){
-				$this->getLogger()->info("{$exception->getMessage()}, stopping proxy...");
-				return;
-			}
-		}
-        $this->saveDefaultConfig();
-		$this->saveResource("hash.txt");	
-		$this->getScheduler()->scheduleRepeatingTask(new ServerTickTask($this), 20);
-		$this->getScheduler()->scheduleRepeatingTask(new CaptchaTask($this), 20);
-		$this->getScheduler()->scheduleRepeatingTask(new NetworkTickTask($this), 100);
-		$this->getServer()->getPluginManager()->registerEvents(new PlayerListener(), $this);
-        $this->getServer()->getPluginManager()->registerEvents(new ServerListener(), $this);		
+    public function onEnable() : void {			
+        $this->proxyUDPSocket = new ProxyUDPSocket();
+	if(ConfigManager::getData(ConfigManager::PROXY_ENABLE)){
+	    $ip = ConfigManager::getData(ConfigManager::PROXY_IP);
+	    $port = ConfigManager::getData(ConfigManager::PROXY_PORT);
+	    try{
+	        $this->proxyUDPSocket->bind(new InternetAddress($ip, $port));
+	    }catch (\Exception $exception){
+		$this->getLogger()->info("{$exception->getMessage()}, stopping proxy...");
+		return;
+	    }
 	}
+        $this->saveDefaultConfig();
+	$this->saveResource("hash.txt");	
+	$this->getScheduler()->scheduleRepeatingTask(new ServerTickTask($this), 20);
+        $this->getScheduler()->scheduleRepeatingTask(new CaptchaTask($this), 20);
+	$this->getScheduler()->scheduleRepeatingTask(new NetworkTickTask($this), 100);
+	$this->getServer()->getPluginManager()->registerEvents(new PlayerListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new ServerListener(), $this);		
+    }
 
-	public function onCommand(CommandSender $sender, Command $command, string $label, array $args) :bool{
+	public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool {
 		(new CommandsListener())->onCommand($sender, $command, $label, $args);
 		return false;
 	}
