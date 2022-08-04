@@ -1,2 +1,5 @@
-vendor
-composer.lock
+# Common IDEs
+.idea/*
+
+# Composer
+vendor/*
