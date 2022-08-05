@@ -38,7 +38,7 @@ use pocketmine\command\CommandSender;
 
 class RCAPIProvider extends PluginBase implements IRCAPI{
 
-    private static $instance;
+    private static RCAPIProvider $instance;
     private ProxyUDPSocket $proxyUDPSocket;
 
     public const VERSION_PLUGIN = "2.1.5";
